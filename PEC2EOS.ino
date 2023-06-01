@@ -3,6 +3,7 @@
 
 #define AOUT       7
 #define LED_BLINK  13
+#define LED_BLINK2  9
 
 eos_semaphore serialSemaphore;
 eos_queue valueint;
@@ -33,10 +34,12 @@ void setup() {
     int num = 63;;
     char letra = 'a';
     float G = 6.67384;
+    int led1 = LED_BLINK;
+    int led2 = LED_BLINK2;
     Serial.begin(9600);
 
     /*  Inicializa as tarefas, semáforos e filas: eos_initial(num_tarefas, num_semáforos, num_filas) */
-      eos_initial(6,1,1);
+      eos_initial(7,1,1);
     /* Criando semáforo eos_create_semaphore(&nome_semaforo, tempo)*/ 
       serialSemaphore = eos_create_semaphore(&serialSemaphore, 2000); 
     /* Criando fila eos_create_queue(&nome_fila, num_elementos, tamanho dos elementos)*/ 
@@ -50,7 +53,8 @@ void setup() {
 
     /* Criando tarefas eos_create_task(codigo, argumento(endereço), tam_pilha(64-256)bytes))*/ 
     Serial.println("Creating task...");
-    eos_create_task(piscar, NULL, 256);
+    eos_create_task(piscar, &led1, 256);
+    eos_create_task(piscar, &led2, 256);
     eos_create_task(SineTask, NULL, 256);
     eos_create_task(imprimir, &num, 256);
     eos_create_task(imprimir2, &letra, 256);
@@ -108,14 +112,17 @@ void task4(void *p) {
 
 /*Tarefas de manipulação de LEDs*/
 /* piscar */
-void piscar(void *p){ 
+void piscar(void *p){
+  /*define o led para piscar*/
+  int led = *(int*)p;
   while(1){
+    Serial.print("LED: ");Serial.println(led);
     // Ativamos o pino 13 (colocando 5v nele)  
-    digitalWrite(LED_BLINK, HIGH);    
+    digitalWrite(led, HIGH);    
     // Aguardamos 1 segundo
     delay(500); 
     // Desligamos o pino 13
-    digitalWrite(LED_BLINK, LOW);
+    digitalWrite(led, LOW);
     // Aguardamos mais um segundo
     delay(500);
   }
