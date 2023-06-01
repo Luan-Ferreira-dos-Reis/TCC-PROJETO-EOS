@@ -6,12 +6,16 @@ A partir de uma modificação razoável do seguinte código:
   https://github.com/SneManden/arduous/tree/master
  
  Além do entendimento das seguintes referênicas:
- https://github.com/arbv/avr-context
- https://github.com/jdn-aau/krnl
- https://embarcados.com.br/meu-kernel-minha-vida-round-robin/
- https://embarcados.com.br/rtos-para-iniciantes-com-arduino-e-freertos/#Criacao-de-filas-queues
- https://www.freertos.org/implementation/a00015.html
- https://jensd.dk/edu/doc/arduino/krnl/MultitaskingonanAVR.pdf
+ Biblitoca de troca de contexto em avr: https://github.com/arbv/avr-context
+ Exemplo de kernel:  https://github.com/jdn-aau/krnl
+ Leituras: https://embarcados.com.br/meu-kernel-minha-vida-round-robin/ , 
+           https://embarcados.com.br/rtos-para-iniciantes-com-arduino-e-freertos/#Criacao-de-filas-queues, 
+           https://www.freertos.org/implementation/a00015.html, 
+           https://jensd.dk/edu/doc/arduino/krnl/MultitaskingonanAVR.pdf
+ 
+ 
+ 
+ 
  
  
  
