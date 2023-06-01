@@ -1,4 +1,6 @@
 #include "eos.h"
+
+/*-------------------------------------------------------- TESTE 1 --------------------------------------------------------------*/
 #include <math.h>
 
 #define AOUT       7
@@ -8,8 +10,6 @@
 /*inicialização de filas e semáforos*/
 eos_semaphore serialSemaphore;
 eos_queue valueint;
-eos_queue measurefloat;
-eos_queue datachar;
 
 int socializing = 0; 
 char palavra[20] = "senha #5798";
@@ -43,19 +43,10 @@ void setup() {
 
     /*  Inicializa as tarefas, semáforos e filas: eos_initial(num_tarefas, num_semáforos, num_filas) */
       eos_initial(7,1,1);  /*observar piscar, sineTask e imprimir1,2,3,4*/
-      //eos_initial(2,0,1);/*observar troca de mensagem entre task1 e task2*/
     /* Criando semáforo eos_create_semaphore(&nome_semaforo, tempo)*/ 
       serialSemaphore = eos_create_semaphore(&serialSemaphore, 2000); 
     /* Criando fila eos_create_queue(&nome_fila, num_elementos, tamanho dos elementos)*/ 
       valueint = eos_create_queue(&valueint, 4, 8);
-      //datachar = eos_create_queue(&datachar, 10, 8);
-    
-    /*Criando tarefas eos_create_task(codigo, argumento(endereço), tam_pilha(64-256)bytes))*/   
-    /*Serial.println("Creating task...");
-    eos_create_task(task1, NULL, 150);
-    eos_create_task(task2, NULL, 150);
-    //eos_create_task(task3, NULL, 150);
-    //eos_create_task(task4, NULL, 150);*/
 
     /* Criando tarefas eos_create_task(codigo, argumento(endereço), tam_pilha(64-256)bytes))*/ 
     Serial.println("Creating task...");
@@ -72,55 +63,6 @@ void setup() {
 }
 
 void loop() {/* Nada é executado aqui */}
-
-/**
- * TASKS
- */
-/* task 1 */
-void task1(void *p) {
-    char frase[10] = {'b', 'e', 'm', ' ', 'v', 'i', 'n', 'd', 'o', '!'};
-    char caractere = 'h';
-    int letra = 0;
-    Serial.println("Task 1 was started");
-    while (1) {
-        eos_queue_write(&datachar,&frase[letra]);
-        letra++;
-        if(letra > 9) letra = 0;
-        delay(300);
-        Serial.println("1: ");
-    }
-}
-/* task 2 */
-void task2(void *p) {
-    char l;
-    Serial.println("Task 2 was started");
-    while (1) {
-        l = eos_queue_read_char(&datachar);
-        delay(250);
-        Serial.print("2: ");
-        Serial.println(l);
-    }
-}
-/* task 3 */
-void task3(void *p) {
-    Serial.println("Task 3 was started");
-    while (1) {
-        socializing++;
-        delay(450);
-        Serial.print("3: ");
-        Serial.println(socializing);
-    }
-}
-/* task 4 */
-void task4(void *p) {
-    Serial.println("Task 4 was started");
-    while (1) {
-        socializing--;
-        delay(550);
-        Serial.print("4: ");
-        Serial.println(socializing);
-    }
-}
 
 /*Tarefas de manipulação de LEDs*/
 /* piscar */
@@ -232,26 +174,100 @@ void imprimir2(void *p){
     }
   }
 
-///* Variáveis de bush button */
-//const int buttonPin = 2;     // the number of the pushbutton pin
-//const int ledPin =  13;      // the number of the LED pin
-//int buttonState = 0;         // variable for reading the pushbutton status
-//void pushButtonTask(void *p);
-//void pushButtonTask(void *p){ 
-//    /* initialize the LED pin as an output:*/
-//    pinMode(ledPin, OUTPUT);
-//    /*  initialize the pushbutton pin as an input:*/
-//    pinMode(buttonPin, INPUT);
-//    while(true) {
-//       /*  read the state of the pushbutton value:*/
-//        buttonState = digitalRead(buttonPin);   
-//        /*  check if the pushbutton is pressed. If it is, the buttonState is HIGH*/:
-//        if(buttonState == HIGH){
-//          /*  turn LED on:*/
-//          digitalWrite(ledPin, HIGH);
-//        }else{
-//          /*  turn LED off:*/
-//          digitalWrite(ledPin, LOW);
-//        }
+  /*----------------------------------------------------------- TESTE 2 ------------------------------------------------------------*/
+/*
+ *  COMENTAR o código acima^   e DESCOMENTAR o código abaixo para observar
+ */
+
+
+
+//#include "eos.h"
+///*inicialização de filas e semáforos*/
+//eos_queue measurefloat;
+//eos_queue datachar;
+//
+//int socializing = 0; 
+//char palavra[20] = "senha #5798";
+//
+///* push button, leds, filas e semáforos */
+//void task1(void *p);
+//void task2(void *p);
+//void task3(void *p);
+//void task4(void *p);
+///*setup*/
+//void setup() {
+//    /* 
+//     *  Parâmetros passados as tarefas.
+//     *  Obs: precisam ser passados por referencia (&arg1, &arg2, &arg3...)
+//     */
+//    Serial.begin(9600);
+//
+//    /*  Inicializa as tarefas, semáforos e filas: eos_initial(num_tarefas, num_semáforos, num_filas) */
+//      
+//      eos_initial(2,0,1);/*observar troca de mensagem entre task1 e task2*/
+//   
+//    /* Criando fila eos_create_queue(&nome_fila, num_elementos, tamanho dos elementos)*/ 
+//     datachar = eos_create_queue(&datachar, 10, 8);
+//    
+//    /*Criando tarefas eos_create_task(codigo, argumento(endereço), tam_pilha(64-256)bytes))*/   
+//    Serial.println("Creating task...");
+//    eos_create_task(task1, NULL, 150);
+//    eos_create_task(task2, NULL, 150);
+//    //eos_create_task(task3, NULL, 150);
+//    //eos_create_task(task4, NULL, 150);
+//  
+//    /* inicia o sistema com valor de time slice eos_start(time_slice)*/
+//    eos_start(5);    
+//}
+//
+//void loop() {/* Nada é executado aqui */}
+//
+///**
+// * TASKS
+// */
+///* task 1 */
+//void task1(void *p) {
+//    char frase[10] = {'b', 'e', 'm', ' ', 'v', 'i', 'n', 'd', 'o', '!'};
+//    char caractere = 'h';
+//    int letra = 0;
+//    Serial.println("Task 1 was started");
+//    while (1) {
+//        eos_queue_write(&datachar,&frase[letra]);
+//        letra++;
+//        if(letra > 9) letra = 0;
+//        delay(300);
+//        Serial.print("1 SEND:              ");
+//        Serial.println(frase[letra]);
+//    }
+//}
+///* task 2 */
+//void task2(void *p) {
+//    char l;
+//    Serial.println("Task 2 was started");
+//    while (1) {
+//        l = eos_queue_read_char(&datachar);
+//        delay(250);
+//        Serial.print("2 RECEIVE: ");
+//        Serial.println(l);
+//    }
+//}
+///* task 3 */
+//void task3(void *p) {
+//    Serial.println("Task 3 was started");
+//    while (1) {
+//        socializing++;
+//        delay(450);
+//        Serial.print("3: ");
+//        Serial.println(socializing);
+//    }
+//}
+///* task 4 */
+//void task4(void *p) {
+//    Serial.println("Task 4 was started");
+//    while (1) {
+//        socializing--;
+//        delay(550);
+//        Serial.print("4: ");
+//        Serial.println(socializing);
 //    }
 //}
