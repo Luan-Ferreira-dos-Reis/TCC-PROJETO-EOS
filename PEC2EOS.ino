@@ -6,15 +6,19 @@
 
 eos_semaphore serialSemaphore;
 eos_queue valueint;
+
 int socializing = 0; 
 char palavra[20] = "senha #5798";
 
+/* push button, leds, filas e semáforos */
 void task1(void *p);
 void task2(void *p);
 void task3(void *p);
 void task4(void *p);
+/* tarefas de atividade em leds para verificar troca de contexto */
 void piscar(void *p);
 void SineTask(void *p);
+/* tarefas de impressão na serial */
 void imprimir(void *p);
 void imprimir2(void *p);
 void imprimir3(void *p);
@@ -22,38 +26,41 @@ void imprimir4(void *p);
 
 /*setup*/
 void setup() {
-    int num = 63, num2 = 31;
+    /* 
+     *  Parâmetros passados as tarefas.
+     *  Obs: precisam ser passados por referencia (&arg1, &arg2, &arg3...)
+     */
+    int num = 63;;
     char letra = 'a';
     float G = 6.67384;
     Serial.begin(9600);
 
-    eos_initial(3,1,1);
-    /*não colocar nenhum código entre eos_initial e inicialização de variável*/
-    serialSemaphore = eos_create_semaphore(&serialSemaphore, 2000); 
-    valueint = eos_create_queue(&valueint, 4, 8);
+    /*  Inicializa as tarefas, semáforos e filas: eos_initial(num_tarefas, num_semáforos, num_filas) */
+      eos_initial(6,1,1);
+    /* Criando semáforo eos_create_semaphore(&nome_semaforo, tempo)*/ 
+      serialSemaphore = eos_create_semaphore(&serialSemaphore, 2000); 
+    /* Criando fila eos_create_queue(&nome_fila, num_elementos, tamanho dos elementos)*/ 
+      valueint = eos_create_queue(&valueint, 4, 8);
+      
     /*Serial.println("Creating task...");
-    if(eos_create_task(task1, NULL, 150))
-        Serial.println("task 1 returned with error");
-    if (eos_create_task(task2, NULL, 150))
-        Serial.println("task 2 returned with error");
-    if (eos_create_task(task3, NULL, 150))
-        Serial.println("task 3 returned with error");
-    if (eos_create_task(task4, NULL, 150))
-        Serial.println("task 4 returned with error");*/
-        
+    eos_create_task(task1, NULL, 150);
+    eos_create_task(task2, NULL, 150);
+    eos_create_task(task3, NULL, 150);
+    eos_create_task(task4, NULL, 150);*/
+
+    /* Criando tarefas eos_create_task(codigo, argumento(endereço), tam_pilha(64-256)bytes))*/ 
     Serial.println("Creating task...");
     eos_create_task(piscar, NULL, 256);
     eos_create_task(SineTask, NULL, 256);
     eos_create_task(imprimir, &num, 256);
     eos_create_task(imprimir2, &letra, 256);
     eos_create_task(imprimir3, &G, 256);
-    eos_create_task(imprimir4, &num2, 256);
-    
+    eos_create_task(imprimir4, NULL, 256);
+    /* inicia o sistema com valor de time slice eos_start(time_slice)*/
     eos_start(5);    
 }
 
-
-void loop() {/* Move along */}
+void loop() {/* Nada é executado aqui */}
 
 /**
  * TASKS
@@ -99,10 +106,10 @@ void task4(void *p) {
     }
 }
 
+/*Tarefas de manipulação de LEDs*/
 /* piscar */
 void piscar(void *p){ 
   while(1){
-    //Serial.println("piscar");
     // Ativamos o pino 13 (colocando 5v nele)  
     digitalWrite(LED_BLINK, HIGH);    
     // Aguardamos 1 segundo
@@ -115,14 +122,12 @@ void piscar(void *p){
 }
 
 /* sineTask */
-void SineTask(void *p) {
-    
+void SineTask(void *p) {    
     unsigned int stime=0, etime=0;
     pinMode(AOUT, OUTPUT);
     unsigned int outpv = 0;
     unsigned int period = 0;
     while(1) {
-        //Serial.println("seno");
         stime = millis();
         for(period = 0; period < 16; ++period){
             etime = millis();
@@ -133,36 +138,41 @@ void SineTask(void *p) {
     }
 }
 
+/*Tarefas de impressão*/
+/*  
+ * Tarefas para impressão na serial que trocam valores entre si (através de filas)
+ * recebem parâmetros como endereço e tratam de acordo com seu próprio código
+ * fazem uso de semáforos  
+ * todas as tarefas realizam alguns delays que somados são iguais a 1 segundo p/ cada tarefa
+ */ 
 void imprimir(void *p){
-  int n = *(int*)p;
-  //while(1){
-  for(int i = 0; i < 10; i++){ 
-    eos_queue_write(&valueint,&n);
-    n++;
-    //Serial.print("tarefa1 i "); 
-    Serial.print("tarefa1 i "); Serial.println(i);
-    Serial.println(n);
+  int n = *(int*)p; /* recebe um endereço como parâmetro e transforma em inteiro */
+  int exe = 1; /* quantidade de execuções da tarefa */
+  while(1){
+    Serial.print("tarefa1 inicio "); Serial.println(exe);
+    exe++;
+    eos_queue_write(&valueint,&n); /* escreve o valor recebido em uma fila */
+    Serial.print("valor enviado: "); Serial.println(n);
+    n++;  /* altera o valor */   
     delay(300);
-    Serial.println("tarefa1 m");
+    Serial.println("tarefa1 meio");
     delay(300);
-    Serial.println("tarefa1 f"); 
+    Serial.println("tarefa1 fim"); 
     delay(400);
     }
   }
 
 void imprimir2(void *p){
-  char l = *(char*)p;
-  //while(1){
-  for(int i = 0; i < 5; i++){
-    Serial.println(l);
-    //;
-    Serial.print("tarefa2 i "); Serial.println(i);
+  char l = *(char*)p; /* recebe um endereço como parâmetro e transforma em char */
+  int _max = 20; /* quantidade de execuções da tarefa */       
+  for(int i = 0; i < _max; i++){
+    Serial.print("tarefa2 inicio "); Serial.println(i+1); /* essa tarefa tem executa uma quantidade de vezes */
     delay(200);
-    Serial.println("tarefa2 m");
+    Serial.print("tarefa2 meio: recebi o char"); Serial.print(l); 
     delay(700);
     Serial.println("tarefa2 f"); 
     delay(100);
-    if(eos_semaphore_take(&serialSemaphore)){
+    if(eos_semaphore_take(&serialSemaphore)){ /* pega um semáforo e escreve na serial */
         Serial.println("nao desista dos seus sonhos até porque você já ouviu ");delay(1000);
         Serial.println("falar em cabo de vassoura, supunhetamos que você vai Ter a vida que");delay(1000);
         Serial.println("você é hoje, Daqui uns anos, Num sei, Vai que  Nasça uma planta Pra sobreviver"); delay(1000);
@@ -174,40 +184,31 @@ void imprimir2(void *p){
   }
 
  void imprimir3(void *p){
-  float r = *(float*)p;
-  //while(1){
-  for(int i = 0; i < 5; i++){
-    Serial.print("tarefa3 i "); Serial.println(i);
-    Serial.println(r);
+  float r = *(float*)p;  /* recebe um endereço como parâmetro e transforma em char */
+  int exe = 1; /* quantidade de execuções da tarefa */
+  while(1){ /* quantidade de execuções da tarefa */
+    Serial.print("tarefa3 inicio "); Serial.println(exe);
+    exe++;
+    Serial.print("recebi o valor: "); Serial.println(r);
     delay(200);
-    Serial.println("tarefa3 m");
+    Serial.println("tarefa3 meio");
     delay(400);
-    Serial.println("tarefa3 f"); 
+    Serial.println("tarefa3 fim"); 
     delay(200);
-//    if(eos_semaphore_take(&serialSemaphore)){
-//        Serial.println("quem não tiver as manha, ");delay(1000);
-//        Serial.println("não entra não sem as instrução de ");delay(1000);
-//        Serial.println("um profissional"); delay(1000);
-//        Serial.println("eh eh eh "); delay(1000);
-//       //eos_semaphore_give(&serialSemaphore);
-//      }
     }
   }
 
  void imprimir4(void *p){
-  int n = *(int*)p;
   int received;
-  //Serial.println(n);
-  //while(1){
-  for(int i = 0; i < 10; i++){
-    Serial.print("tarefa4 i "); Serial.println(i);
-    received = eos_queue_read(&valueint);
-    Serial.println(received);
-    //Serial.println(n); n--;
+  int _max = 50; /* quantidade de execuções da tarefa */
+  for(int i = 0; i < _max; i++){
+    Serial.print("tarefa4 inicio "); Serial.println(i+1);
+    received = eos_queue_read(&valueint); /* ler valores de uma pilha */
+    Serial.print("valor recebido: ");Serial.println(received); /* escreve valor lido */
     delay(100);
-    Serial.println("tarefa4 m");
+    Serial.println("tarefa4 meio");
     delay(300);
-    Serial.println("tarefa4 f"); 
+    Serial.println("tarefa4 fim"); 
     delay(600);
     }
   }
