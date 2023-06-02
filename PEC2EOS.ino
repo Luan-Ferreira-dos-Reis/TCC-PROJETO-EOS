@@ -11,14 +11,6 @@
 eos_semaphore serialSemaphore;
 eos_queue valueint;
 
-int socializing = 0; 
-char palavra[20] = "senha #5798";
-
-/* push button, leds, filas e semáforos */
-void task1(void *p);
-void task2(void *p);
-void task3(void *p);
-void task4(void *p);
 /* tarefas de atividade em leds para verificar troca de contexto */
 void piscar(void *p);
 void SineTask(void *p);
@@ -89,6 +81,7 @@ void SineTask(void *p) {
     unsigned int outpv = 0;
     unsigned int period = 0;
     while(1) {
+        Serial.println("SineTask");
         stime = millis();
         for(period = 0; period < 16; ++period){
             etime = millis();
@@ -129,7 +122,10 @@ void imprimir2(void *p){
   for(int i = 0; i < _max; i++){
     Serial.print("tarefa2 inicio "); Serial.println(i+1); /* essa tarefa tem executa uma quantidade de vezes */
     delay(200);
-    Serial.print("tarefa2 meio: recebi o char"); Serial.print(l); 
+    if(eos_semaphore_take(&serialSemaphore)){
+     Serial.print("tarefa2 meio: recebi o char: "); Serial.println(l);
+     eos_semaphore_give(&serialSemaphore);  
+    }   
     delay(700);
     Serial.println("tarefa2 f"); 
     delay(100);
