@@ -265,10 +265,11 @@ void task3(void *p) {
 /* task 4 */
 void task4(void *p) {
     float measure;
+    float cte = 1.618033987;
     Serial.println("Task 4 was started");
     while (1) {
         /* envia os valores para fila */
-        measure = micros()/random(1000000);
+        measure = random(10)/cte;
         eos_queue_write(&measurefloat, &measure);
         /* cria um novo valor */
         Serial.print("4: send: "); Serial.println(measure);
