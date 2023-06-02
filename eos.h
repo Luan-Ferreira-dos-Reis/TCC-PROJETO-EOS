@@ -18,7 +18,7 @@
 
 /* Max stacksize for a task */
 #ifndef TASKMAXSTACKSIZE
-#define TASKMAXSTACKSIZE 256  
+#define TASKMAXSTACKSIZE 1024  
 #endif
 
 /* Min stacksize for a task */

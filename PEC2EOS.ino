@@ -197,21 +197,21 @@ void setup() {
 
     /* Inicializa as tarefas, semáforos e filas: eos_initial(num_tarefas, num_semáforos, num_filas) */
       
-    eos_initial(2,0,1);/*observar troca de mensagem entre task1 e task2*/
+    eos_initial(4,0,2);/*observar troca de mensagem entre task1 e task2*/
 
     /* Criando semáforo eos_create_semaphore(&nome_semaforo, tempo)*/ 
     // serialSemaphore = eos_create_semaphore(&serialSemaphore, 2000);
        
     /* Criando fila eos_create_queue(&nome_fila, num_elementos, tamanho dos elementos)*/ 
      datachar = eos_create_queue(&datachar, 10, 8);
-     //measurefloat = eos_create_queue(&measurefloat, 5, 32);
+     measurefloat = eos_create_queue(&measurefloat, 5, 32);
     
     /*Criando tarefas eos_create_task(codigo, argumento(endereço), tam_pilha(64-256)bytes))*/   
     Serial.println("Creating task...");
-    eos_create_task(task1, NULL, 150);
-    eos_create_task(task2, NULL, 150);
-    //eos_create_task(task3, NULL, 150);
-    //eos_create_task(task4, NULL, 150);
+    eos_create_task(task1, NULL, 256);
+    eos_create_task(task2, NULL, 256);
+    eos_create_task(task3, NULL, 512);
+    eos_create_task(task4, NULL, 512);
   
     /* inicia o sistema com valor de time slice eos_start(time_slice)*/
     eos_start(5);    
@@ -258,19 +258,20 @@ void task3(void *p) {
     while (1) {
         receive = eos_queue_read_float(&measurefloat);
         /* recebe os valores da fila e imprime */
-        Serial.print("3: receive");Serial.println(receive);
+        Serial.print("3: receive: ");Serial.println(receive);
         delay(450);
     }
 }
 /* task 4 */
 void task4(void *p) {
-    float measure = 2.345;
+    float measure;
     Serial.println("Task 4 was started");
     while (1) {
         /* envia os valores para fila */
+        measure = micros()/random(1000000);
         eos_queue_write(&measurefloat, &measure);
         /* cria um novo valor */
-        Serial.print("4: send"); Serial.println(measure);
+        Serial.print("4: send: "); Serial.println(measure);
         delay(550);    
     }
 }
