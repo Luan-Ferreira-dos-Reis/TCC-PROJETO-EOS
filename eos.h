@@ -23,7 +23,7 @@
 
 /* Min stacksize for a task */
 #ifndef TASKMINSTACKSIZE
-#define TASKMINSTACKSIZE 64  
+#define TASKMINSTACKSIZE 512  
 #endif
 
 /* debug option */
@@ -74,14 +74,12 @@
           goto initial;\
     } } while(0)      
 /*------------------------------------------------------------------------------------------------------ */
-
 /**
  * Method declarations
  */
-
 /*--------------------------------------------Task-------------------------------------------------------*/
 /* Creates a new thread */
-int eos_create_task(void (*runner)(void *runner_arg), void *arg, int size_stack); /* LUAN FERREIRA DOS REIS */
+int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *arg, int size_stack); /* LUAN FERREIRA DOS REIS */
 /* Switches between tasks */
 void eos_switch_task(void) __attribute__ ((naked));
 /* run task properly */
@@ -93,7 +91,6 @@ struct eos_task *eos_dequeue(struct eos_task *task);
 /* idle_task*/
 void idle_task(void *p);
 /*-------------------------------------------------------------------------------------------------------*/
-
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /* Creates a new semaphore */
 struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore, int semaphore_time);
@@ -102,7 +99,6 @@ int eos_semaphore_take(eos_semaphore* semaphore);
 /* free a lock semaphore*/
 void eos_semaphore_give(eos_semaphore* semaphore);
 /*-------------------------------------------------------------------------------------------------*/
-
 /*-------------------------------------------Queue-------------------------------------------------*/
 /* create a queue to share date */
 struct eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements);
@@ -119,19 +115,15 @@ int eos_queue_receive(eos_queue *q);
 float eos_queue_receive_float(eos_queue *q);
 char eos_queue_receive_char(eos_queue *q);
 /*--------------------------------------------------------------------------------------------------*/
-
 /*--------------------------------------------- Kernel ----------------------------------------------*/
-void eos_initial(int num_task, int num_semaphore, int num_queue);
+void eos_initial();
 /* Starts the Arduous kernel */
 int eos_start(int ts);
 /*---------------------------------------------------------------------------------------------------*/
-
 /*--------------------------------------------debug functions----------------------------------------*/
 /* Prints the task queue */
 void eos_print_queue(void);
 /* Prints the task stack */
 void eos_print_stack(char *stack, int bytes);
-
 /*---------------------------------------------------------------------------------------------------*/
-
 #endif /* _EOS_H_ */

@@ -10,7 +10,7 @@ static struct eos_task *task_queue = NULL;
 /* Pointer to currently running task (NULL if none) */
 static struct eos_task *current_task = NULL;
 /* dummy pool */
-static struct eos_task dummy;
+static struct eos_task dummy, dummy2;
 /* Semaphore pool */
 static struct eos_semaphore *semaphore_pool = NULL;
 /* Queue pool */
@@ -22,9 +22,7 @@ static int task_count = 0;
 static int semaphore_count = 0;
 static int queue_count = 0;
 /*-------------------------------------------------------------------------------------------------------*/
-
 /*--------------------------------------------Task-------------------------------------------------------*/
-
 /**
  * Insert *task into back of queue by modifying pointers of the head and tail
  * of the queue, and the pointers of *task itself.
@@ -81,10 +79,10 @@ void idle_task(void *p) {
  * @param  runner Pointer to function where the task resides
  * @return        0 on success; -1 on error
  */
-int eos_create_task(void (*runner)(void *runner_arg), void *arg, int size_stack) { /* LUAN FERREIRA DOS REIS */
+int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *arg, int size_stack) { /* LUAN FERREIRA DOS REIS */
     int i;
     char *stack;
-    struct eos_task *new_task;
+    //struct eos_task *new_task;
 
     /* Ensure the size of stack between allowed*/
     if(size_stack > TASKMAXSTACKSIZE)
@@ -96,13 +94,13 @@ int eos_create_task(void (*runner)(void *runner_arg), void *arg, int size_stack)
     if (current_task) return -1;
 
     /* Get a new task from the task pool */
+    task_pool = (eos_task*)realloc(task_pool, (task_count + 1) * sizeof(eos_task));
     new_task = &task_pool[task_count];
+    
+    /* save the task struct data*/
     new_task->task_id = task_count++;
     new_task->code = runner;
     new_task->state = READY;
-    
-    /* Get memory for stack from the stack pool */
-    /*stack = (char*) &stack_pool[new_task->task_id];*/
     
     /* Achieve a reduction of about 40% to 7% dynamic allocation memory*/
     /* Get memory for stack from the stack pool with dynamic allocation */ 
@@ -176,7 +174,6 @@ void make_callfunc(void){
     ENABLE_INTERRUPTS();
 }
 /*-------------------------------------------------------------------------------------------------------*/
-
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /*
  * Creates a new semaphore 
@@ -185,12 +182,13 @@ void make_callfunc(void){
  */
 struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore, int semaphore_time){
   /* Get a new semaphore from the semaphore pool */
+    semaphore_pool = (eos_semaphore*)realloc(semaphore_pool, (semaphore_count + 1) * sizeof(eos_semaphore));
     new_semaphore = &semaphore_pool[semaphore_count];
   /*initialize semaphore free*/
     new_semaphore->unlock = 1;
     new_semaphore->time_free = semaphore_time;
+    
     semaphore_count++;
-
     return *new_semaphore; 
 }
 
@@ -226,7 +224,6 @@ void eos_semaphore_give(eos_semaphore* semaphore){
   }/* free semaphore */; 
 }
 /*-------------------------------------------------------------------------------------------------*/
-
 /*-------------------------------------------Queue-------------------------------------------------*/
 /*
  * Create a queue to share date
@@ -235,6 +232,7 @@ void eos_semaphore_give(eos_semaphore* semaphore){
  */
 struct eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements){
   /* Get a new queue from the queue pool */
+  queue_pool = (eos_queue*)realloc(queue_pool,(queue_count + 1) * sizeof(eos_queue));
   q = &queue_pool[queue_count];
   /* initialize values */
   q->size_queue = size_queue;
@@ -336,7 +334,6 @@ char eos_queue_receive_char(eos_queue *q){
   return (buffer_temp); 
 }
 /*-------------------------------------------------------------------------------------------------*/
-
 /*------------------------------------------Kernel functions----------------------------------------*/
 /**
  * perform initial values to kernel
@@ -344,30 +341,8 @@ char eos_queue_receive_char(eos_queue *q){
  * @param  int number of tasks
  * @return void
  */
-void eos_initial(int num_task, int num_semaphore, int num_queue){
-  /* for a while to allocate 2 idle task(idle_task and scheduler_main) */
-  num_task = num_task + 2;
-  /*ensure that the number of task be permited*/
-  if(num_task > MAXTASKS)
-    num_task = MAXTASKS;
-  /* creats the task pool array */
-  task_pool = (eos_task*)malloc(num_task * sizeof(eos_task));
-
-  /* First create idle task 2 times to ensure always have a task in kernel*/
-    eos_create_task(idle_task, NULL, TASKMINSTACKSIZE);
-    eos_create_task(idle_task, NULL, TASKMINSTACKSIZE);
-  
-   /* creats the semaphore pool array */
-  if(num_semaphore > 0){
-    semaphore_pool = (eos_semaphore*)malloc(num_semaphore * sizeof(eos_semaphore));
-  }
-  /* creats the queue pool array */
-  if(num_queue > 0){
-    queue_pool = (eos_queue*)malloc(num_queue * sizeof(eos_queue));
-  }
-  
+void eos_initial(){
 }
-
 /**
  * Initializes the kernel by setting up the interrupt routine to fire each 1 ms
  * Timer interrupt regards:
@@ -376,6 +351,10 @@ void eos_initial(int num_task, int num_semaphore, int num_queue){
  * @return    -1 if error during initialization (does not return otherwise!)
  */
 int eos_start(int ts) {
+    /* Create 2 idle task that always run in eos*/
+    eos_create_task(&dummy, idle_task, NULL, 512);
+    eos_create_task(&dummy2, idle_task, NULL, 512);
+    
     if (task_queue == NULL)
         return -1;
 
@@ -424,6 +403,8 @@ int eos_start(int ts) {
     return 0;  /* And definitely not this return statement */
 }
 
+/*------------------------------------------------------------------------------------------------------*/
+/*----------------------------------- ISR AND CONTEXT SWITCH -------------------------------------------*/
 /**
  * Interrupt service routine
  * ISR run with 1 kHz
@@ -459,9 +440,8 @@ void __attribute__ ((naked, noinline)) eos_switch_task(void) {
     POPREGISTERS();
     RET();
 }
-/*---------------------------------------------------------------------------------------------------*/
-
-/*--------------------------------------------debug functions----------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------debug functions------------------------------------------------------------*/
 /**
  * Prints the task queue
  */
@@ -496,4 +476,4 @@ void eos_print_stack(char *stack, int bytes) {
         Serial.println( *(stack+i), HEX );
     }
 }
-/*------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------*/
