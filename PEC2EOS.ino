@@ -210,7 +210,7 @@ void setup() {
     Serial.println("Creating task...");
     eos_create_task(task1, NULL, 256);
     eos_create_task(task2, NULL, 256);
-    eos_create_task(task3, NULL, 512);
+    eos_create_task(task3, NULL, 1024);
     eos_create_task(task4, NULL, 1024);
   
     /* inicia o sistema com valor de time slice eos_start(time_slice)*/
@@ -222,7 +222,14 @@ void loop() {/* Nada é executado aqui */}
 /**
  * TASKS
  */
-/* task 1 */
+
+/* TASK 1 ESCREVE UMA FRASE QUE É RECEBIDA POR TASK 2 UTILIZANDO UMA ESTRUTURA DE FILAS
+ * TASK 4 ENVIA DADOS PSEUDO ALEÁTORIOS QUE PODEM SER RECEBIDOS POR TASK 3
+ * OBS: O TAMANHO DA PILHA(STACK) DE TASK 3 E TASK 4 IMPORTAM POIS DEPENDENDO DA VELOCIDADE(DELAY ENTRE ATIVIDADES) 
+ * QUE CRIAM DADOS A PILHA PODE CRESCER ALÉM DO ESPAÇO RESERVADO PARA CADA TASK
+ */ 
+ 
+ /* task 1 */
 void task1(void *p) {
     int tamFrase = 10;
     char frase[tamFrase] = {'b', 'e', 'm', ' ', 'v', 'i', 'n', 'd', 'o', '!'};
@@ -235,7 +242,7 @@ void task1(void *p) {
         letra++;
         if(letra >= tamFrase) letra = 0;
         delay(500);
-        Serial.print("1 SEND:              ");
+        Serial.print("1 WRITE:              ");
         Serial.println(frase[letra]);
     }
 }
@@ -247,7 +254,7 @@ void task2(void *p) {
         /* recebe os valores da fila e imprime */
         l = eos_queue_read_char(&datachar);
         delay(500);
-        Serial.print("2 RECEIVE:                         ");
+        Serial.print("2 READ:                         ");
         Serial.println(l);
     }
 }
@@ -258,7 +265,7 @@ void task3(void *p) {
     while (1) {
         receive = eos_queue_receive_float(&measurefloat);
         /* recebe os valores da fila e imprime */
-        Serial.print("3: receive: ");Serial.println(receive);
+        Serial.print("3: RECEIVE: ");Serial.println(receive);
         delay(500);
     }
 }
@@ -272,7 +279,7 @@ void task4(void *p) {
         measure = random(10)/cte;
         eos_queue_send(&measurefloat, &measure);
         /* cria um novo valor */
-        Serial.print("4: send: "); Serial.println(measure);
+        Serial.print("4: SEND: "); Serial.println(measure);
         delay(500);    
     }
 }

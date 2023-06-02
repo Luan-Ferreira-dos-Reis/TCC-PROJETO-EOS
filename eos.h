@@ -13,7 +13,7 @@
 /*-------------------------------------------System configuration-------------------------------------------------- */
 /* Max number of tasks supported */
 #ifndef MAXTASKS
-#define MAXTASKS 12            
+#define MAXTASKS 32            
 #endif
 
 /* Max stacksize for a task */
