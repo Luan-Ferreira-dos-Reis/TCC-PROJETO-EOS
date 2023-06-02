@@ -189,7 +189,7 @@ struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore, int sema
     return *new_semaphore; 
 }
 
-int eos_semaphore_take(eos_semaphore* semaphore){  
+int eos_semaphore_take(eos_semaphore* semaphore){ 
   /* test if semaphore is unlock*/
   if(semaphore->unlock == 1){
     /* semaphore lock  and task work alone*/
@@ -197,8 +197,9 @@ int eos_semaphore_take(eos_semaphore* semaphore){
     semaphore->unlock = 0;   
     return 1;
   }/* to ocupy semaphore */ 
-  else
-    return 0;  
+  else{
+    return 0;
+  }     
 }
 
 void eos_semaphore_give(eos_semaphore* semaphore){
