@@ -197,10 +197,10 @@ void setup() {
 
     /* Inicializa as tarefas, semáforos e filas: eos_initial(num_tarefas, num_semáforos, num_filas) */
       
-    eos_initial(4,0,2);/*observar troca de mensagem entre task1 e task2*/
+    eos_initial(4,1,2);/*observar troca de mensagem entre task1 e task2*/
 
     /* Criando semáforo eos_create_semaphore(&nome_semaforo, tempo)*/ 
-    // serialSemaphore = eos_create_semaphore(&serialSemaphore, 2000);
+    serialSemaphore = eos_create_semaphore(&serialSemaphore, 2000);
        
     /* Criando fila eos_create_queue(&nome_fila, num_elementos, tamanho dos elementos)*/ 
      datachar = eos_create_queue(&datachar, 10, 8);
@@ -247,7 +247,7 @@ void task2(void *p) {
         /* recebe os valores da fila e imprime */
         l = eos_queue_read_char(&datachar);
         delay(250);
-        Serial.print("2 RECEIVE: ");
+        Serial.print("2 RECEIVE:                         ");
         Serial.println(l);
     }
 }
@@ -256,7 +256,7 @@ void task3(void *p) {
     float receive = 0;
     Serial.println("Task 3 was started");
     while (1) {
-        receive = eos_queue_read_float(&measurefloat);
+        receive = eos_queue_receive_float(&measurefloat);
         /* recebe os valores da fila e imprime */
         Serial.print("3: receive: ");Serial.println(receive);
         delay(450);
@@ -270,7 +270,7 @@ void task4(void *p) {
     while (1) {
         /* envia os valores para fila */
         measure = random(10)/cte;
-        eos_queue_write(&measurefloat, &measure);
+        eos_queue_send(&measurefloat, &measure);
         /* cria um novo valor */
         Serial.print("4: send: "); Serial.println(measure);
         delay(550);    
