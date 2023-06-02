@@ -234,7 +234,7 @@ void task1(void *p) {
         eos_queue_write(&datachar,&frase[letra]);
         letra++;
         if(letra >= tamFrase) letra = 0;
-        delay(300);
+        delay(500);
         Serial.print("1 SEND:              ");
         Serial.println(frase[letra]);
     }
@@ -246,7 +246,7 @@ void task2(void *p) {
     while (1) {
         /* recebe os valores da fila e imprime */
         l = eos_queue_read_char(&datachar);
-        delay(250);
+        delay(500);
         Serial.print("2 RECEIVE:                         ");
         Serial.println(l);
     }
@@ -257,10 +257,9 @@ void task3(void *p) {
     Serial.println("Task 3 was started");
     while (1) {
         receive = eos_queue_receive_float(&measurefloat);
-        //receive = eos_queue_read_float(&measurefloat);
         /* recebe os valores da fila e imprime */
         Serial.print("3: receive: ");Serial.println(receive);
-        delay(450);
+        delay(500);
     }
 }
 /* task 4 */
@@ -272,9 +271,8 @@ void task4(void *p) {
         /* envia os valores para fila */
         measure = random(10)/cte;
         eos_queue_send(&measurefloat, &measure);
-        //eos_queue_write(&measurefloat, &measure);
         /* cria um novo valor */
         Serial.print("4: send: "); Serial.println(measure);
-        delay(550);    
+        delay(500);    
     }
 }
