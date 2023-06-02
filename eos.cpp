@@ -178,6 +178,11 @@ void make_callfunc(void){
 /*--------------------------------------------Task-------------------------------------------------------*/
 
 /*----------------------------------------semaphores-----------------------------------------------*/
+/*
+ * Creates a new semaphore 
+ * @param  handler to semaphore
+ * @return        a semaphore
+ */
 struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore, int semaphore_time){
   /* Get a new semaphore from the semaphore pool */
     new_semaphore = &semaphore_pool[semaphore_count];
@@ -189,6 +194,11 @@ struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore, int sema
     return *new_semaphore; 
 }
 
+/**
+ * A task can take a semaphore to apropriate hardware recurse
+ * @param  semaphore
+ * @return        0 if semaphore is avaible; 0 if not
+ */
 int eos_semaphore_take(eos_semaphore* semaphore){ 
   /* test if semaphore is unlock*/
   if(semaphore->unlock == 1){
@@ -202,6 +212,11 @@ int eos_semaphore_take(eos_semaphore* semaphore){
   }     
 }
 
+/**
+ * A task can give up a semaphore
+ * @param  semaphore
+ * @return        void
+ */
 void eos_semaphore_give(eos_semaphore* semaphore){
   /* test if semaphore is lock*/
   if(semaphore->unlock == 0){
@@ -213,8 +228,12 @@ void eos_semaphore_give(eos_semaphore* semaphore){
 /*----------------------------------------semaphores-----------------------------------------------*/
 
 /*-------------------------------------------queue-------------------------------------------------*/
-/* create a queue to share date */
-eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements){
+/*
+ * Create a queue to share date
+ * @param  handler to semaphore, size queue, size of elements
+ * @return        a queue
+ */
+struct eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements){
   /* Get a new queue from the queue pool */
   q = &queue_pool[queue_count];
   /* initialize values */
@@ -228,7 +247,12 @@ eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements){
   return *q;
 }
 
-/* loss the last element of the queue data[sizeQueue-1] and write on the first data[0]. Obs: begin of queue [last element of array] or the first in*/
+/*
+ * Write in the begin of the queue
+ * @param  queue, pointer to the value
+ * Obs: loss the last element of the queue data[sizeQueue-1] and write on the first data[0].
+ *      begin of queue [last element of array] or the first in
+ * @return        void*/
 void eos_queue_write(eos_queue *q, void *value){
   DISABLE_INTERRUPTS();
   for(int i = q->size_queue - 1; i > 0; i--){
@@ -242,7 +266,11 @@ void eos_queue_write(eos_queue *q, void *value){
   ENABLE_INTERRUPTS();
 }
 
-/* Add elements to the begin of the queue and increase the queue*/
+/*
+ * Write in the send elements to the queue, Add elements to the begin of the queue and increase the queue
+ * @param  queue, pointer to the value
+ * @return        void
+ */
 void eos_queue_send(eos_queue *q, void *value){
   DISABLE_INTERRUPTS();
   q->data = (int*)realloc(q->data, ((q->size_queue) + 1)*sizeof(int));
@@ -252,8 +280,12 @@ void eos_queue_send(eos_queue *q, void *value){
   eos_queue_write(q, value);  
   ENABLE_INTERRUPTS();
 }
-
-/* FIFO first in first out return the last element to in */
+/*
+ * Read elements from queue, but to retire
+ * FIFO first in first out return the last element
+ * @param  queue, pointer to the value
+ * @return        the respective value
+ */
 int eos_queue_read(eos_queue *q){
   return q->data[q->size_queue-1]; 
 }
@@ -263,7 +295,13 @@ float eos_queue_read_float(eos_queue *q){
 char eos_queue_read_char(eos_queue *q){
   return q->mensg[q->size_queue-1]; 
 }
-/* receive a element of queue and remove the element */
+
+/*
+ * Receive a element of queue and remove the element
+ * FIFO first in first out return the last element
+ * @param  queue, pointer to the value
+ * @return        the respective value
+ */
 int eos_queue_receive(eos_queue *q){
   DISABLE_INTERRUPTS();
   /* save the first out*/

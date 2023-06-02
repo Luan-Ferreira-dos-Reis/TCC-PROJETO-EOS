@@ -105,7 +105,7 @@ void eos_semaphore_give(eos_semaphore* semaphore);
 
 /*-------------------------------------------Queue-------------------------------------------------*/
 /* create a queue to share date */
-eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements);
+struct eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements);
 /* loss the last element of the queue data[sizeQueue-1] and write on the first data[0]. Obs: begin of queue [last element of array] or the first in*/
 void eos_queue_write(eos_queue *q, void *value);
 /* Add elements to the begin of the queue and increase the queue*/
