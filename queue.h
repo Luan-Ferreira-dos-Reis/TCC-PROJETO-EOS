@@ -10,7 +10,6 @@ extern "C" {
 /* queue to share data */ 
 typedef struct eos_queue{
     int size_queue;       /* size of queue */
-    int size_elements;    /* type of elements */
     int *data;          /* array of element int */
     float *value;          /* array of element float*/
     char *mensg;          /* array of element char*/

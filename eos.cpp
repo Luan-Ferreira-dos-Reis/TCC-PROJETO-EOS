@@ -37,7 +37,7 @@ static struct eos_queue *queue_pool = NULL;
 static int time_slice; 
 static int time_count;
 static int preempt = 1; /* enable context switch for each time slice */
-static int port_max_delay = 10000;
+static int port_max_delay; /* max delay permited to semaphores */
 static int task_count = 0;
 static int semaphore_count = 0;
 static int queue_count = 0;
@@ -206,7 +206,6 @@ struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore){
     new_semaphore = &semaphore_pool[semaphore_count];
   /*initialize semaphore free*/
     new_semaphore->unlock = 1;
-    new_semaphore->time_free = 0;
     
     semaphore_count++;
     return *new_semaphore; 
@@ -250,16 +249,15 @@ void eos_semaphore_give(eos_semaphore* semaphore){
 /*-------------------------------------------Queue-------------------------------------------------*/
 /*
  * Create a queue to share date
- * @param  handler to semaphore, size queue, size of elements
+ * @param  handler to semaphore, size queue
  * @return        a queue
  */
-struct eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements){
+struct eos_queue eos_create_queue(eos_queue *q, int size_queue){
   /* Get a new queue from the queue pool */
   queue_pool = (eos_queue*)realloc(queue_pool,(queue_count + 1) * sizeof(eos_queue));
   q = &queue_pool[queue_count];
   /* initialize values */
   q->size_queue = size_queue;
-  q->size_elements = size_elements; 
   /* alloc memory space and set values 0*/
   (q->data) = (int*)calloc(size_queue, sizeof(int)); 
   (q->value) = (float*)calloc(size_queue, sizeof(float));
@@ -373,7 +371,7 @@ void eos_initial(){
  * @param  ts Desired size of a timeslice
  * @return    -1 if error during initialization (does not return otherwise!)
  */
-int eos_start(int ts) {
+int eos_start(int ts, int max_delay) {
     /* Create 2 idle task that always run in eos*/
     eos_create_task(&dummy, idle_task, NULL, 512);
     eos_create_task(&dummy2, idle_task, NULL, 512);
@@ -413,8 +411,9 @@ int eos_start(int ts) {
       TIMSKx |= (1 << TOIEx);           
     }
     
-    /* Set the size of a timeslice from parameter */
+    /* Set the size of a timeslice  and port_max_delay from parameter */
     time_slice = ts;
+    port_max_delay = max_delay; 
 
     /* Used by eos_switch_task for the first task switch */
     current_task = &dummy;

@@ -73,7 +73,7 @@
         if(current_task->state == FINISHED)\
           goto initial;\
     } } while(0)  
-
+/* Enable and disable preemption */   /* LUAN FERREIRA DOS REIS */
 #define enable_preempt() do { \
   preempt = 1;\
   } while(0)
@@ -110,7 +110,7 @@ void eos_semaphore_give(eos_semaphore* semaphore);
 /*-------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------Queue-------------------------------------------------*/
 /* create a queue to share date */
-struct eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements);
+struct eos_queue eos_create_queue(eos_queue *q, int size_queue);
 /* loss the last element of the queue data[sizeQueue-1] and write on the first data[0]. Obs: begin of queue [last element of array] or the first in*/
 void eos_queue_write(eos_queue *q, void *value);
 /* Add elements to the begin of the queue and increase the queue*/
@@ -127,7 +127,7 @@ char eos_queue_receive_char(eos_queue *q);
 /*--------------------------------------------- Kernel ----------------------------------------------*/
 void eos_initial();
 /* Starts the Arduous kernel */
-int eos_start(int ts);
+int eos_start(int ts, int max_delay) ;
 /*---------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------debug functions----------------------------------------*/
 /* Prints the task queue */
