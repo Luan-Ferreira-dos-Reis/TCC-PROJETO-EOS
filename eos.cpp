@@ -440,7 +440,7 @@ ISR(TIMERx_OVF_vect, ISR_NAKED) {
     if (time_count >= time_slice && preempt || time_count >= port_max_delay) {
         time_count = 0;
         preempt = 1;
-        eos_context_switch2();
+        eos_context_switch();
     } else
         time_count++;
     /* Restore registers from stack and return */
@@ -457,7 +457,7 @@ ISR(TIMERx_OVF_vect, ISR_NAKED) {
 void __attribute__ ((naked, noinline)) eos_switch_task(void) {
     /* Save registers on stack */
     PUSHREGISTERS();
-    eos_context_switch2();
+    eos_context_switch();
     /* Restore registers from stack and return */
     POPREGISTERS();
     RET();
