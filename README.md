@@ -20,10 +20,14 @@ A partir de uma modificação razoável do seguinte código:
  Além do entendimento das seguintes referênicas:
  Biblitoca de troca de contexto em avr: https://github.com/arbv/avr-context 
  Exemplo de kernel:  https://github.com/jdn-aau/krnl
+ 
  Leituras: https://embarcados.com.br/meu-kernel-minha-vida-round-robin/ , 
-           https://embarcados.com.br/rtos-para-iniciantes-com-arduino-e-freertos/#Criacao-de-filas-queues, 
+          
+          https://embarcados.com.br/rtos-para-iniciantes-com-arduino-e-freertos/#Criacao-de-filas-queues, 
+           
            https://www.freertos.org/implementation/a00015.html, 
-           https://jensd.dk/edu/doc/arduino/krnl/MultitaskingonanAVR.pdf
+          
+          https://jensd.dk/edu/doc/arduino/krnl/MultitaskingonanAVR.pdf
            
            
  Autor do projeto: Luan Ferreira dos Reis 
