@@ -16,8 +16,9 @@ static struct eos_semaphore *semaphore_pool = NULL;
 /* Queue pool */
 static struct eos_queue *queue_pool = NULL;
 /* Timeslice */
-static int time_slice; /* Number of miliseconds given to each task */
+static int time_slice; 
 static int time_count;
+static int preempt = 1;
 static int task_count = 0;
 static int semaphore_count = 0;
 static int queue_count = 0;
@@ -180,13 +181,13 @@ void make_callfunc(void){
  * @param  handler to semaphore
  * @return        a semaphore
  */
-struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore, int semaphore_time){
+struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore){
   /* Get a new semaphore from the semaphore pool */
     semaphore_pool = (eos_semaphore*)realloc(semaphore_pool, (semaphore_count + 1) * sizeof(eos_semaphore));
     new_semaphore = &semaphore_pool[semaphore_count];
   /*initialize semaphore free*/
     new_semaphore->unlock = 1;
-    new_semaphore->time_free = semaphore_time;
+    new_semaphore->time_free = 0;
     
     semaphore_count++;
     return *new_semaphore; 
@@ -209,7 +210,6 @@ int eos_semaphore_take(eos_semaphore* semaphore){
     return 0;
   }     
 }
-
 /**
  * A task can give up a semaphore
  * @param  semaphore
@@ -414,7 +414,6 @@ ISR(TIMERx_OVF_vect, ISR_NAKED) {
     PUSHREGISTERS();
     /* Reset timer */
     TCNTx = TIMERPRESETx;
-
     /* If the timeslice has expired, we perform a context switch */
     if (time_count == time_slice) {
         time_count = 0;

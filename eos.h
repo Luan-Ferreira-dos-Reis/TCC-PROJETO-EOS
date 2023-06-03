@@ -93,7 +93,7 @@ void idle_task(void *p);
 /*-------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /* Creates a new semaphore */
-struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore, int semaphore_time);
+struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore);
 /* Take a created semaphore*/
 int eos_semaphore_take(eos_semaphore* semaphore);
 /* free a lock semaphore*/
