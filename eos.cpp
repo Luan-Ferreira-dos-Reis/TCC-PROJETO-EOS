@@ -1,3 +1,21 @@
+/*
+    EMBEDDED OPERATING SYSTEM - EOS
+    
+    É um sistema operacional para plataforma Arduino Entre as características do projeto estão:
+    
+    Escalonamento preemptivo em round roubin (com opção de escolha do timeslice)
+    Implementação de aspectos básicos de filas e semáforos
+    Flexibilidade de utilização de todos os timers (0, 1, 2, 3, 4, 5) do arduino
+    Flexibilidade no tamanho da pilha necessária para execução dos processos
+    Reutilização de códigos de tarefas com argumentos diferents (void function(void *arg))
+    Este projeto está sendo construído para disciplina de conclusão de curso.
+    
+    A partir de uma modificação razoável do seguinte código:
+    https://github.com/SneManden/arduous/tree/master 
+
+    Autor: Luan Ferreira dos Reis - github: https://github.com/Luan-Ferreira-dos-Reis/TCC-PROJETO-EOS
+ */
+
 #include <stdlib.h>
  
 #include "eos.h"
@@ -18,7 +36,8 @@ static struct eos_queue *queue_pool = NULL;
 /* Timeslice */
 static int time_slice; 
 static int time_count;
-static int preempt = 1;
+static int preempt = 1; /* enable context switch for each time slice */
+static int port_max_delay = 10000;
 static int task_count = 0;
 static int semaphore_count = 0;
 static int queue_count = 0;
@@ -203,6 +222,8 @@ int eos_semaphore_take(eos_semaphore* semaphore){
   if(semaphore->unlock == 1){
     /* semaphore lock  and task work alone*/
     DISABLE_INTERRUPTS();
+    disable_preempt();
+    ENABLE_INTERRUPTS();
     semaphore->unlock = 0;   
     return 1;
   }/* to ocupy semaphore */ 
@@ -220,6 +241,8 @@ void eos_semaphore_give(eos_semaphore* semaphore){
   if(semaphore->unlock == 0){
    /* free semaphore */
     semaphore->unlock = 1;
+    DISABLE_INTERRUPTS();
+    enable_preempt();
     ENABLE_INTERRUPTS();
   }/* free semaphore */; 
 }
@@ -415,8 +438,9 @@ ISR(TIMERx_OVF_vect, ISR_NAKED) {
     /* Reset timer */
     TCNTx = TIMERPRESETx;
     /* If the timeslice has expired, we perform a context switch */
-    if (time_count == time_slice) {
+    if (time_count >= time_slice && preempt || time_count >= port_max_delay) {
         time_count = 0;
+        preempt = 1;
         eos_context_switch2();
     } else
         time_count++;
