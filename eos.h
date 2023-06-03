@@ -58,21 +58,7 @@
         SPL = current_task->sp_low; \
         SPH = current_task->sp_high; \
     } } while(0)
-
-/* Performs a context switch by setting stack pointer among tasks using task_pool */   /* LUAN FERREIRA DOS REIS */
-#define eos_context_switch2() do { \
-   initial: \
-    if (current_task != NULL && task_queue != NULL &&\
-        current_task != task_queue) { \
-        current_task->sp_low = SPL; \
-        current_task->sp_high = SPH; \
-        current_task = task_queue; \
-        task_queue = task_queue->next; \
-        SPL = current_task->sp_low; \
-        SPH = current_task->sp_high; \
-        if(current_task->state == FINISHED)\
-          goto initial;\
-    } } while(0)  
+ 
 /* Enable and disable preemption */   /* LUAN FERREIRA DOS REIS */
 #define enable_preempt() do { \
   preempt = 1;\

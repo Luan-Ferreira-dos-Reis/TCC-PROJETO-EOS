@@ -436,7 +436,7 @@ ISR(TIMERx_OVF_vect, ISR_NAKED) {
     PUSHREGISTERS();
     /* Reset timer */
     TCNTx = TIMERPRESETx;
-    /* If the timeslice has expired, we perform a context switch */
+    /* If the timeslice has expired, we perform a context switch or reach the maximum delay */
     if (time_count >= time_slice && preempt || time_count >= port_max_delay) {
         time_count = 0;
         preempt = 1;
