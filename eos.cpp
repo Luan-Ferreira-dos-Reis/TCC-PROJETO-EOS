@@ -20,28 +20,6 @@
  
 #include "eos.h"
 
-/*-------------------------------------Global Variables----------------------------------------------*/
-/* Task pool */
-static struct eos_task *task_pool = NULL;
-/* Pointer to head of task queue (NULL if empty) */
-static struct eos_task *task_queue = NULL;
-/* Pointer to currently running task (NULL if none) */
-static struct eos_task *current_task = NULL;
-/* dummy pool */
-static struct eos_task dummy, dummy2;
-/* Semaphore pool */
-static struct eos_semaphore *semaphore_pool = NULL;
-/* Queue pool */
-static struct eos_queue *queue_pool = NULL;
-/* Timeslice */
-static int time_slice; 
-static int time_count;
-static int preempt = 1; /* enable context switch for each time slice */
-static int port_max_delay; /* max delay permited to semaphores */
-static int task_count = 0;
-static int semaphore_count = 0;
-static int queue_count = 0;
-/*-------------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------Task-------------------------------------------------------*/
 /**
  * Insert *task into back of queue by modifying pointers of the head and tail

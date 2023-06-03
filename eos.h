@@ -65,6 +65,7 @@
         task_queue = NULL; \
     else if (current_task == task_queue) \
         task_queue = current_task->next; \
+    current_task->state = FINISHED; \
     current_task->prev->next = current_task->next; \
     current_task->next->prev = current_task->prev; \
   } while(0)
@@ -78,6 +79,28 @@
   preempt = 0; \
   }  while(0)
 
+/*-------------------------------------Global Variables----------------------------------------------*/
+/* Task pool */
+static struct eos_task *task_pool = NULL;
+/* Pointer to head of task queue (NULL if empty) */
+static struct eos_task *task_queue = NULL;
+/* Pointer to currently running task (NULL if none) */
+static struct eos_task *current_task = NULL;
+/* dummy pool */
+static struct eos_task dummy, dummy2;
+/* Semaphore pool */
+static struct eos_semaphore *semaphore_pool = NULL;
+/* Queue pool */
+static struct eos_queue *queue_pool = NULL;
+/* Timeslice */
+static int time_slice; 
+static int time_count;
+static int preempt = 1; /* enable context switch for each time slice */
+static int port_max_delay; /* max delay permited to semaphores */
+static int task_count = 0;
+static int semaphore_count = 0;
+static int queue_count = 0;
+/*-------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------------------------------ */
 /**
  * Method declarations
