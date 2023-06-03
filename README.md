@@ -14,11 +14,16 @@ Entre as características do projeto estão:
 
 
 Este projeto está sendo construído para disciplina de conclusão de curso.
+
 A partir de uma modificação razoável do seguinte código: 
+  
   https://github.com/SneManden/arduous/tree/master
  
- Além do entendimento das seguintes referênicas:
+
+Além do entendimento das seguintes referênicas:
+ 
  Biblitoca de troca de contexto em avr: https://github.com/arbv/avr-context 
+ 
  Exemplo de kernel:  https://github.com/jdn-aau/krnl
  
  Leituras: https://embarcados.com.br/meu-kernel-minha-vida-round-robin/ , 
