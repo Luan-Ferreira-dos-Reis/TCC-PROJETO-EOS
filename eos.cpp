@@ -373,8 +373,8 @@ void eos_initial(){
  */
 int eos_start(int ts, int max_delay) {
     /* Create 2 idle task that always run in eos*/
-    eos_create_task(&dummy, idle_task, NULL, 512);
-    eos_create_task(&dummy2, idle_task, NULL, 512);
+    eos_create_task(&dummy, idle_task, NULL, TASKMINSTACKSIZE);
+    eos_create_task(&dummy2, idle_task, NULL, TASKMINSTACKSIZE);
     
     if (task_queue == NULL)
         return -1;

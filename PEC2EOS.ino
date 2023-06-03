@@ -49,7 +49,7 @@ void setup() {
     eos_create_task(&i3, imprimir3, &G, 512);
     eos_create_task(&i4, imprimir4, NULL, 512);
     
-    /* inicia o sistema com valor de time slice e tempo máximo de ocupalçao de semáforos eos_start(time_slice, max_delay)*/
+    /* inicia o sistema com valor de time slice e tempo máximo de ocupaçao de semáforos eos_start(time_slice, max_delay)*/
     eos_start(5, 5000);    
 }
  
