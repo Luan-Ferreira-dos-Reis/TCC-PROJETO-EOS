@@ -58,13 +58,23 @@
         SPL = current_task->sp_low; \
         SPH = current_task->sp_high; \
     } } while(0)
+
+/* Removes  e the current task from task queue for in case the current task is complete */
+#define DEQUEUE() do { \
+  if (task_queue->prev == task_queue->next) \
+        task_queue = NULL; \
+    else if (current_task == task_queue) \
+        task_queue = current_task->next; \
+    current_task->prev->next = current_task->next; \
+    current_task->next->prev = current_task->prev; \
+  } while(0)
  
 /* Enable and disable preemption */   /* LUAN FERREIRA DOS REIS */
-#define enable_preempt() do { \
+#define ENABLE_PREEMPT() do { \
   preempt = 1;\
   } while(0)
 
-#define disable_preempt() do { \
+#define DISABLE_PREEMPT() do { \
   preempt = 0; \
   }  while(0)
 
@@ -84,7 +94,7 @@ void eos_enqueue(struct eos_task *task);
 /* Return an element from the front of the queue */
 struct eos_task *eos_dequeue(struct eos_task *task);
 /* idle_task*/
-void idle_task(void *p);
+void idle_task(void *arg);
 /*-------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /* Creates a new semaphore */

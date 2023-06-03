@@ -86,10 +86,10 @@ struct eos_task *eos_dequeue(struct eos_task *task) {
  * @param  void pointer only to beform other task code
  * @return        nothing
  */
-void idle_task(void *p) {
+void idle_task(void *arg) {
   int i = 0;
   while(1){
-        i++;
+      i++; 
   }
 }
 
@@ -189,7 +189,7 @@ void make_callfunc(void){
     /* updates the task state (realy not necessary)*/
     current_task->state = FINISHED;
     /* remove task from queue, context switch and enable interrupts */  
-    eos_dequeue(current_task);
+    DEQUEUE();//eos_dequeue(current_task); /* DEQUEUE();*/
     eos_switch_task();
     ENABLE_INTERRUPTS();
 }
@@ -221,7 +221,7 @@ int eos_semaphore_take(eos_semaphore* semaphore){
   if(semaphore->unlock == 1){
     /* semaphore lock  and task work alone*/
     DISABLE_INTERRUPTS();
-    disable_preempt();
+    DISABLE_PREEMPT();
     ENABLE_INTERRUPTS();
     semaphore->unlock = 0;   
     return 1;
@@ -241,7 +241,7 @@ void eos_semaphore_give(eos_semaphore* semaphore){
    /* free semaphore */
     semaphore->unlock = 1;
     DISABLE_INTERRUPTS();
-    enable_preempt();
+    ENABLE_PREEMPT();
     ENABLE_INTERRUPTS();
   }/* free semaphore */; 
 }
@@ -363,6 +363,7 @@ char eos_queue_receive_char(eos_queue *q){
  * @return void
  */
 void eos_initial(){
+  
 }
 /**
  * Initializes the kernel by setting up the interrupt routine to fire each 1 ms
@@ -374,7 +375,6 @@ void eos_initial(){
 int eos_start(int ts, int max_delay) {
     /* Create 2 idle task that always run in eos*/
     eos_create_task(&dummy, idle_task, NULL, TASKMINSTACKSIZE);
-    eos_create_task(&dummy2, idle_task, NULL, TASKMINSTACKSIZE);
     
     if (task_queue == NULL)
         return -1;
