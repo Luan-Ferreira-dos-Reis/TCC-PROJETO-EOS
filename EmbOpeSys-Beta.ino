@@ -36,8 +36,8 @@ void setup() {
     
     /* Criando semáforo eos_create_semaphore(&nome_semaforo)*/ 
       serialSemaphore = eos_create_semaphore(&serialSemaphore); 
-    /* Criando fila eos_create_queue(&nome_fila, num_elementos >= 1)*/ 
-      valueint = eos_create_queue(&valueint, 4);
+    /* Criando fila eos_create_queue(&nome_fila, num_elementos >= 1, tam_elementos)*/ 
+      valueint = eos_create_queue(&valueint, 4, sizeof(int));
 
     /* Criando tarefas eos_create_task(handler ,codigo, argumento(endereço), tam_pilha(128-1024)bytes) valores testados por enquanto)*/ 
     Serial.println("Creating task....................................................................");delay(1000);
@@ -102,7 +102,7 @@ void imprimir(void *p){
   int n = *(int*)p; /* recebe um endereço como parâmetro e transforma em inteiro */
   int exe = 1; /* quantidade de execuções da tarefa */
   //while(1){
-    for(int i = 0; i < 25; i++){
+    for(int i = 0; i < 20; i++){
     Serial.print("tarefa1 inicio "); Serial.println(exe);
     exe++;
     eos_queue_write(&valueint,&n); /* escreve o valor recebido em uma fila */
@@ -155,10 +155,10 @@ void imprimir2(void *p){
 
  void imprimir4(void *p){
   int received;
-  int _max = 25; /* quantidade de execuções da tarefa */
+  int _max = 20; /* quantidade de execuções da tarefa */
   for(int i = 0; i < _max; i++){
     Serial.print("tarefa4 inicio "); Serial.println(i+1);
-    received = eos_queue_read(&valueint); /* ler valores de uma pilha */
+    received = *(int*)eos_queue_read(&valueint); /* ler valores de uma pilha */
     Serial.print("valor recebido: ");Serial.println(received); /* escreve valor lido */
     delay(100);
     Serial.println("tarefa4 meio");
@@ -198,9 +198,9 @@ void imprimir2(void *p){
 //    /* Criando semáforo eos_create_semaphore(&nome_semaforo)*/ 
 //    serialSemaphore = eos_create_semaphore(&serialSemaphore);
 //       
-//    /* Criando fila eos_create_queue(&nome_fila, num_elementos)*/ 
-//     datachar = eos_create_queue(&datachar, 5);
-//     measurefloat = eos_create_queue(&measurefloat, 5);
+//    /* Criando fila eos_create_queue(&nome_fila, num_elementos, tam_elementos)*/ 
+//     datachar = eos_create_queue(&datachar, 5, sizeof(char));
+//     measurefloat = eos_create_queue(&measurefloat, 10, sizeof(float));
 //    
 //    /*Criando tarefas eos_create_task(handler task, codigo, argumento(endereço), tam_pilha(256-1024)bytes))*/   
 //    Serial.println("Creating task....................................................................");delay(1000);
@@ -247,7 +247,7 @@ void imprimir2(void *p){
 //    Serial.println("Task 2 was started");
 //    while (1) {
 //        /* recebe os valores da fila e imprime */
-//        l = eos_queue_read_char(&datachar);
+//        l = *(char*)eos_queue_read(&datachar);
 //        delay(500);
 //        Serial.print("2 READ:                         ");
 //        Serial.println(l);
@@ -258,7 +258,7 @@ void imprimir2(void *p){
 //    float receive = 0;
 //    Serial.println("Task 3 was started");
 //    while (1) {
-//        receive = eos_queue_receive_float(&measurefloat);
+//        receive = *(float*)eos_queue_receive(&measurefloat);
 //        /* recebe os valores da fila e imprime */
 //        Serial.print("3: RECEIVE: ");Serial.println(receive);
 //        delay(500);

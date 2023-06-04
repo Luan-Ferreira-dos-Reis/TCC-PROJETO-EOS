@@ -10,12 +10,13 @@ static int queue_count = 0;
  * @param  handler to semaphore, size queue
  * @return        a queue
  */
-struct eos_queue eos_create_queue(eos_queue *q, int size_queue){
+struct eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements){
   /* Get a new queue from the queue pool */
   queue_pool = (eos_queue*)realloc(queue_pool,(queue_count + 1) * sizeof(eos_queue));
   q = &queue_pool[queue_count];
   /* initialize values */
   q->size_queue = size_queue;
+  q->size_elements = size_elements;
   /* alloc memory space and set values 0*/
   (q->data) = (int*)calloc(size_queue, sizeof(int)); 
   (q->value) = (float*)calloc(size_queue, sizeof(float));
@@ -63,7 +64,33 @@ void eos_queue_send(eos_queue *q, void *value){
  * @param  queue, pointer to the value
  * @return        the respective value
  */
-int eos_queue_read(eos_queue *q){
+void *eos_queue_read(eos_queue *q){
+  DISABLE_INTERRUPTS();
+  int bufferi;
+  float bufferf;
+  char bufferc;
+  void *bufferptr;
+  if(q->size_elements == 2){
+    bufferi = eos_queue_read_int(q);
+    bufferptr = &bufferi;
+    ENABLE_INTERRUPTS();
+    return bufferptr;
+  }
+  else if(q->size_elements == 4){
+    bufferf = eos_queue_read_float(q);
+    bufferptr = &bufferf;
+    ENABLE_INTERRUPTS();
+    return bufferptr;
+  }
+  else {  
+    bufferc = eos_queue_read_char(q);
+    bufferptr = &bufferc;
+    ENABLE_INTERRUPTS();
+    return bufferptr;
+  } 
+}
+/* auxilar function to read */
+int eos_queue_read_int(eos_queue *q){
   return q->data[q->size_queue-1]; 
 }
 float eos_queue_read_float(eos_queue *q){
@@ -79,37 +106,63 @@ char eos_queue_read_char(eos_queue *q){
  * @param  queue, pointer to the value
  * @return        the respective value
  */
-int eos_queue_receive(eos_queue *q){
+void *eos_queue_receive(eos_queue *q){
   DISABLE_INTERRUPTS();
+  int bufferi;
+  float bufferf;
+  char bufferc;
+  void *bufferptr;
+  if(q->size_elements == 2){
+    bufferi = eos_queue_receive_int(q);
+    bufferptr = &bufferi;
+    ENABLE_INTERRUPTS();
+    return bufferptr;
+  }
+  else if(q->size_elements == 4){
+    bufferf = eos_queue_receive_float(q);
+    bufferptr = &bufferf;
+    ENABLE_INTERRUPTS();
+    return bufferptr;
+  }
+  else {  
+    bufferc = eos_queue_receive_char(q);
+    bufferptr = &bufferc;
+    ENABLE_INTERRUPTS();
+    return bufferptr;
+  } 
+}
+/* auxiliar function to receive */
+int eos_queue_receive_int(eos_queue *q){
+  //DISABLE_INTERRUPTS();
   /* save the first out*/
-  int buffer_temp = eos_queue_read(q);
+  int buffer_temp = eos_queue_read_int(q);
   /* free memory */
   int last = (q->size_queue)-1;
     q->data = (int*)realloc(q->data, ((q->size_queue) - 1)*sizeof(int));
   q->size_queue--;
-  ENABLE_INTERRUPTS();
+  //ENABLE_INTERRUPTS();
   return (buffer_temp); 
 }
 float eos_queue_receive_float(eos_queue *q){
-  DISABLE_INTERRUPTS();
+  //DISABLE_INTERRUPTS();
   /* save the first out*/
   float buffer_temp = eos_queue_read_float(q);
   /* free memory */
   int last = (q->size_queue)-1;
     q->value = (float*)realloc(q->value, ((q->size_queue) - 1)*sizeof(float));
   q->size_queue--;
-  ENABLE_INTERRUPTS();
+  //ENABLE_INTERRUPTS();
   return (buffer_temp);  
 }
 char eos_queue_receive_char(eos_queue *q){
-  DISABLE_INTERRUPTS();
+  //DISABLE_INTERRUPTS();
   /* save the first out*/
   char buffer_temp = eos_queue_read_char(q);
   /* free memory */
   char last = (q->size_queue)-1;
     q->mensg = (char*)realloc(q->mensg, ((q->size_queue) - 1)*sizeof(char));
   q->size_queue--;
-  ENABLE_INTERRUPTS();
+  //ENABLE_INTERRUPTS();
   return (buffer_temp); 
 }
 /*-------------------------------------------------------------------------------------------------*/

@@ -72,7 +72,6 @@ void idle_task(void *args) {
 int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *arg, int size_stack) { /* LUAN FERREIRA DOS REIS */
     int i;
     char *stack;
-    //struct eos_task *new_task;
 
     /* Ensure the size of stack between allowed*/
     if(size_stack > TASKMAXSTACKSIZE)
