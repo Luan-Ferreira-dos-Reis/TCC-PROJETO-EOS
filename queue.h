@@ -1,7 +1,7 @@
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
 
-
+#include "eos.h"
 
 #ifdef __cplusplus
 extern "C" {

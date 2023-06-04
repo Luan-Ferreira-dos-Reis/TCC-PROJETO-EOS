@@ -1,6 +1,7 @@
 #ifndef _EOS_H_
 #define _EOS_H_
 
+#include <stdlib.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include "Arduino.h"
@@ -79,28 +80,10 @@
   preempt = 0; \
   }  while(0)
 
-/*-------------------------------------Global Variables----------------------------------------------*/
-/* Task pool */
-static struct eos_task *task_pool = NULL;
-/* Pointer to head of task queue (NULL if empty) */
-static struct eos_task *task_queue = NULL;
-/* Pointer to currently running task (NULL if none) */
-static struct eos_task *current_task = NULL;
-/* dummy pool */
-static struct eos_task dummy, dummy2;
-/* Semaphore pool */
-static struct eos_semaphore *semaphore_pool = NULL;
-/* Queue pool */
-static struct eos_queue *queue_pool = NULL;
-/* Timeslice */
-static int time_slice; 
-static int time_count;
-static int preempt = 1; /* enable context switch for each time slice */
-static int port_max_delay; /* max delay permited to semaphores */
-static int task_count = 0;
-static int semaphore_count = 0;
-static int queue_count = 0;
-/*-------------------------------------------------------------------------------------------------------*/
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*------------------------------------------------------------------------------------------------------ */
 /**
  * Method declarations
@@ -117,7 +100,7 @@ void eos_enqueue(struct eos_task *task);
 /* Return an element from the front of the queue */
 struct eos_task *eos_dequeue(struct eos_task *task);
 /* idle_task*/
-void idle_task(void *arg);
+void idle_task(void *args);
 /*-------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /* Creates a new semaphore */
@@ -148,10 +131,15 @@ void eos_initial();
 /* Starts the Arduous kernel */
 int eos_start(int ts, int max_delay) ;
 /*---------------------------------------------------------------------------------------------------*/
-/*--------------------------------------------debug functions----------------------------------------*/
-/* Prints the task queue */
-void eos_print_queue(void);
-/* Prints the task stack */
-void eos_print_stack(char *stack, int bytes);
+///*--------------------------------------------debug functions----------------------------------------*/
+///* Prints the task queue */
+//void eos_print_queue(void);
+///* Prints the task stack */
+//void eos_print_stack(char *stack, int bytes);
 /*---------------------------------------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* _EOS_H_ */
