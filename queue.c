@@ -133,36 +133,30 @@ void *eos_queue_receive(eos_queue *q){
 }
 /* auxiliar function to receive */
 int eos_queue_receive_int(eos_queue *q){
-  //DISABLE_INTERRUPTS();
   /* save the first out*/
   int buffer_temp = eos_queue_read_int(q);
   /* free memory */
   int last = (q->size_queue)-1;
     q->data = (int*)realloc(q->data, ((q->size_queue) - 1)*sizeof(int));
   q->size_queue--;
-  //ENABLE_INTERRUPTS();
   return (buffer_temp); 
 }
 float eos_queue_receive_float(eos_queue *q){
-  //DISABLE_INTERRUPTS();
   /* save the first out*/
   float buffer_temp = eos_queue_read_float(q);
   /* free memory */
   int last = (q->size_queue)-1;
     q->value = (float*)realloc(q->value, ((q->size_queue) - 1)*sizeof(float));
   q->size_queue--;
-  //ENABLE_INTERRUPTS();
   return (buffer_temp);  
 }
 char eos_queue_receive_char(eos_queue *q){
-  //DISABLE_INTERRUPTS();
   /* save the first out*/
   char buffer_temp = eos_queue_read_char(q);
   /* free memory */
   char last = (q->size_queue)-1;
     q->mensg = (char*)realloc(q->mensg, ((q->size_queue) - 1)*sizeof(char));
   q->size_queue--;
-  //ENABLE_INTERRUPTS();
   return (buffer_temp); 
 }
 /*-------------------------------------------------------------------------------------------------*/
