@@ -80,9 +80,6 @@
   preempt = 0; \
   }  while(0)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*------------------------------------------------------------------------------------------------------ */
 /**
@@ -138,8 +135,6 @@ int eos_start(int ts, int max_delay) ;
 //void eos_print_stack(char *stack, int bytes);
 /*---------------------------------------------------------------------------------------------------*/
 
-#ifdef __cplusplus
-}
-#endif
+
 
 #endif /* _EOS_H_ */
