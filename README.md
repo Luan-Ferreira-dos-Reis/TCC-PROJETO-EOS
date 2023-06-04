@@ -40,6 +40,7 @@ Além do entendimento das seguintes referênicas:
  
  
  /* TODO LOUVOR SEJA DADO A DEUS */
+ 
  / * To God be the glory */
  
  
