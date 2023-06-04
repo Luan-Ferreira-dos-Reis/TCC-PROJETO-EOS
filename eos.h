@@ -15,6 +15,18 @@
 
     Autor: Luan Ferreira dos Reis - github: https://github.com/Luan-Ferreira-dos-Reis/TCC-PROJETO-EOS
  */
+ /* BASICS DOCUMENTATION----------------------------------------------------------------------------------------------------------
+   START THE SYSTEM      -> eos_start(int timeSlice, int maxPortDelay);
+   CREATE A TASK         -> eos_create_task(eos_task *task, void function (), void *arg, int size_Of_stack)
+   CREATE A SEMAPHORE    -> eos_create_semaphore(eos_semaphore *semaphore)
+      TAKE A SEMAPHORE   -> eos_semaphore_take(eos_semaphore *semaphore)
+      GIVE A SEMAPHORE   -> eos_semaphore_give(eos_semaphore *semaphore)
+   CREATE A QUEUE        -> eos_create_queue(eos_queue *semaphore, int sizeOfQueue, int sizeOfType[obs: sizeof(int) or sizeof(float) or sizeof(char)])
+      WRITE IN QUEUE     -> eos_queue_write(eos_queue *queue, *value) obs: only overwrite
+      READ FROM QUEUE    -> eos_queue_read(eos_queue *queue)          obs: only read the a value
+      SEND TO QUEUE      -> eos_queue_send(eos_queue *queue, *value)  obs: push a element and increase the queue
+      RECEIVE FROM QUEUE -> eos_queue_receive(eos_queue *queue)       obs: pop a element and reduce the queue
+ -----------------------------------------------------------------------------------------------------------------------------------*/
 
 #ifndef _EOS_H_
 #define _EOS_H_
