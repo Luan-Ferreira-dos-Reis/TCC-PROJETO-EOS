@@ -50,7 +50,7 @@ void setup() {
     eos_create_task(&i4, imprimir4, NULL, 256);
     
     /* inicia o sistema com valor de time slice e tempo máximo de ocupaçao de semáforos eos_start(time_slice, max_delay(max 30000ms))*/
-    eos_start(5, 20000);    
+    eos_start(5, 10000);    
 }
  
 void loop() {/* Nada é executado aqui */}
@@ -118,13 +118,13 @@ void imprimir(void *p){
 
 void imprimir2(void *p){
   char l = *(char*)p; /* recebe um endereço como parâmetro e transforma em char */
-  int _max = 20; /* quantidade de execuções da tarefa */       
+  int _max = 10; /* quantidade de execuções da tarefa */       
   for(int i = 0; i < _max; i++){
     Serial.print("tarefa2 inicio "); Serial.println(i+1); /* essa tarefa tem executa uma quantidade de vezes */
     delay(200);
     Serial.print("tarefa2 meio: recebi o char: "); Serial.println(l);
     delay(700);
-    Serial.println("tarefa2 f"); 
+    Serial.println("tarefa2 fim"); 
     delay(100);
     if(eos_semaphore_take(&serialSemaphore)){ /* pega um semáforo e escreve na serial */
         Serial.println("não, não desista dos seus sonhos até porque você já ouviu "); delay(500);

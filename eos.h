@@ -106,31 +106,6 @@ void eos_enqueue(struct eos_task *task);
 struct eos_task *eos_dequeue(struct eos_task *task);
 /* idle_task*/
 void idle_task(void *args);
-/*-------------------------------------------------------------------------------------------------------*/
-/*----------------------------------------Semaphores-----------------------------------------------*/
-/* Creates a new semaphore */
-struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore);
-/* Take a created semaphore*/
-int eos_semaphore_take(eos_semaphore* semaphore);
-/* free a lock semaphore*/
-void eos_semaphore_give(eos_semaphore* semaphore);
-/*-------------------------------------------------------------------------------------------------*/
-/*-------------------------------------------Queue-------------------------------------------------*/
-/* create a queue to share date */
-struct eos_queue eos_create_queue(eos_queue *q, int size_queue);
-/* loss the last element of the queue data[sizeQueue-1] and write on the first data[0]. Obs: begin of queue [last element of array] or the first in*/
-void eos_queue_write(eos_queue *q, void *value);
-/* Add elements to the begin of the queue and increase the queue*/
-void eos_queue_send(eos_queue *q, void *value);
-/* FIFO first in first out return the last element to in */
-int eos_queue_read(eos_queue *q);
-float eos_queue_read_float(eos_queue *q);
-char eos_queue_read_char(eos_queue *q);
-/* receive a element of queue and remove the element */
-int eos_queue_receive(eos_queue *q);
-float eos_queue_receive_float(eos_queue *q);
-char eos_queue_receive_char(eos_queue *q);
-/*--------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------- Kernel ----------------------------------------------*/
 void eos_initial();
 /* Starts the Arduous kernel */
