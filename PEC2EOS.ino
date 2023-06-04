@@ -41,9 +41,9 @@ void setup() {
 
     /* Criando tarefas eos_create_task(codigo, argumento(endereço), tam_pilha(256-2048)bytes) valores testados por enquanto)*/ 
     Serial.println("Creating task....................................................................");delay(1000);
-    //eos_create_task(&p, piscar, &led1, 512);
-    //eos_create_task(&p2, piscar, &led2, 512);
-    //eos_create_task(&st, SineTask, NULL, 512);
+    eos_create_task(&p, piscar, &led1, 512);
+    eos_create_task(&p2, piscar, &led2, 512);
+    eos_create_task(&st, SineTask, NULL, 512);
     eos_create_task(&i, imprimir, &num, 512);
     eos_create_task(&i2, imprimir2, &letra, 512);
     eos_create_task(&i3, imprimir3, &G, 512);

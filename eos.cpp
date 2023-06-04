@@ -465,35 +465,35 @@ void __attribute__ ((naked, noinline)) eos_switch_task(void) {
 /**
  * Prints the task queue
  */
-//void eos_print_queue(void) {
-//    struct eos_task *iter = task_queue;
-//    Serial.println("Queue:");
-//    do {
-//        Serial.print("  task ");
-//        Serial.println(iter->task_id);
-//        iter = iter->next;
-//    } while (iter != task_queue);
-//    Serial.println("----------");
-//}
-//
-///**
-// * Prints the stack provided for a task in HEX
-// * @param stack Pointer to memory area of stack
-// * @param bytes Number of bytes of stack to print
-// */
-//  
-//void eos_print_stack(char *stack, int bytes) {
-//    int i;
-//    Serial.print("Stack: (starting at ");
-//    Serial.print( upper8(stack) , HEX);
-//    Serial.print( lower8(stack) , HEX);
-//    Serial.println(")");
-//    for (i=0; i<bytes; i++) {
-//        Serial.print("  ");
-//        Serial.print(upper8(stack+i), HEX);
-//        Serial.print(lower8(stack+i), HEX);
-//        Serial.print(": ");
-//        Serial.println( *(stack+i), HEX );
-//    }
-//}
+void eos_print_queue(void) {
+    struct eos_task *iter = task_queue;
+    Serial.println("Queue:");
+    do {
+        Serial.print("  task ");
+        Serial.println(iter->task_id);
+        iter = iter->next;
+    } while (iter != task_queue);
+    Serial.println("----------");
+}
+
+/**
+ * Prints the stack provided for a task in HEX
+ * @param stack Pointer to memory area of stack
+ * @param bytes Number of bytes of stack to print
+ */
+  
+void eos_print_stack(char *stack, int bytes) {
+    int i;
+    Serial.print("Stack: (starting at ");
+    Serial.print( upper8(stack) , HEX);
+    Serial.print( lower8(stack) , HEX);
+    Serial.println(")");
+    for (i=0; i<bytes; i++) {
+        Serial.print("  ");
+        Serial.print(upper8(stack+i), HEX);
+        Serial.print(lower8(stack+i), HEX);
+        Serial.print(": ");
+        Serial.println( *(stack+i), HEX );
+    }
+}
 /*-----------------------------------------------------------------------------------------------------------------*/
