@@ -41,16 +41,16 @@ void setup() {
 
     /* Criando tarefas eos_create_task(codigo, argumento(endereço), tam_pilha(256-2048)bytes) valores testados por enquanto)*/ 
     Serial.println("Creating task....................................................................");delay(1000);
-    //eos_create_task(&p, piscar, &led1, 512);
-    //eos_create_task(&p2, piscar, &led2, 512);
-    //eos_create_task(&st, SineTask, NULL, 512);
-    eos_create_task(&i, imprimir, &num, 512);
-    eos_create_task(&i2, imprimir2, &letra, 512);
-    eos_create_task(&i3, imprimir3, &G, 512);
-    eos_create_task(&i4, imprimir4, NULL, 512);
+    eos_create_task(&p, piscar, &led1, 256);
+    eos_create_task(&p2, piscar, &led2, 256);
+    eos_create_task(&st, SineTask, NULL, 256);
+    eos_create_task(&i, imprimir, &num, 256);
+    eos_create_task(&i2, imprimir2, &letra, 256);
+    eos_create_task(&i3, imprimir3, &G, 256);
+    eos_create_task(&i4, imprimir4, NULL, 256);
     
-    /* inicia o sistema com valor de time slice e tempo máximo de ocupaçao de semáforos eos_start(time_slice, max_delay)*/
-    eos_start(5, 5000);    
+    /* inicia o sistema com valor de time slice e tempo máximo de ocupaçao de semáforos eos_start(time_slice, max_delay(max 30000ms))*/
+    eos_start(5, 20000);    
 }
  
 void loop() {/* Nada é executado aqui */}
@@ -102,7 +102,7 @@ void imprimir(void *p){
   int n = *(int*)p; /* recebe um endereço como parâmetro e transforma em inteiro */
   int exe = 1; /* quantidade de execuções da tarefa */
   //while(1){
-    for(int i = 0; i < 20; i++){
+    for(int i = 0; i < 25; i++){
     Serial.print("tarefa1 inicio "); Serial.println(exe);
     exe++;
     eos_queue_write(&valueint,&n); /* escreve o valor recebido em uma fila */
@@ -118,7 +118,7 @@ void imprimir(void *p){
 
 void imprimir2(void *p){
   char l = *(char*)p; /* recebe um endereço como parâmetro e transforma em char */
-  int _max = 500; /* quantidade de execuções da tarefa */       
+  int _max = 20; /* quantidade de execuções da tarefa */       
   for(int i = 0; i < _max; i++){
     Serial.print("tarefa2 inicio "); Serial.println(i+1); /* essa tarefa tem executa uma quantidade de vezes */
     delay(200);
@@ -132,7 +132,7 @@ void imprimir2(void *p){
         Serial.println("você é hoje, Daqui uns anos, Num sei, Vai que  Nasça uma planta Pra sobreviver"); delay(500);
         Serial.println("E q a.. Pode ser que mude A alternativa Do.. Dom pedro segundo e o padre quando"); delay(500); 
         Serial.println("for rezar a missa Vai querer uma Latinha de cerveja E aí? interprete..."); delay(500);
-       //eos_semaphore_give(&serialSemaphore);
+       eos_semaphore_give(&serialSemaphore);
       }
     }
   }
@@ -141,7 +141,7 @@ void imprimir2(void *p){
   float r = *(float*)p;  /* recebe um endereço como parâmetro e transforma em char */
   int exe = 1; /* quantidade de execuções da tarefa */
   //while(1){ /* quantidade de execuções da tarefa */
-    for(int i = 0; i < 30; i++){
+    for(int i = 0; i < 15; i++){
     Serial.print("tarefa3 inicio "); Serial.println(exe);
     exe++;
     Serial.print("recebi o valor: "); Serial.println(r);
@@ -204,13 +204,13 @@ void imprimir2(void *p){
 //    
 //    /*Criando tarefas eos_create_task(handler task, codigo, argumento(endereço), tam_pilha(256-1024)bytes))*/   
 //    Serial.println("Creating task....................................................................");delay(1000);
-//    eos_create_task(&t1, task1, NULL, 256);
-//    eos_create_task(&t2, task2, NULL, 256);
-//    eos_create_task(&t3, task3, NULL, 1024);
-//    eos_create_task(&t4, task4, NULL, 1024);
+//    eos_create_task(&t1, task1, NULL, 128);
+//    eos_create_task(&t2, task2, NULL, 128);
+//    eos_create_task(&t3, task3, NULL, 128);
+//    eos_create_task(&t4, task4, NULL, 128);
 //  
 //    /* inicia o sistema com valor de time slice e tempo máximo de ocupaçao de semáforos eos_start(time_slice, max_delay)*/
-//    eos_start(5, 10000);    
+//    eos_start(5, 5000);    
 //}
 //
 //void loop() {/* Nada é executado aqui */}

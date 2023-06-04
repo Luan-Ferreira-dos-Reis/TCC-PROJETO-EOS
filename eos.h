@@ -24,7 +24,12 @@
 
 /* Min stacksize for a task */
 #ifndef TASKMINSTACKSIZE
-#define TASKMINSTACKSIZE 512  
+#define TASKMINSTACKSIZE 128  
+#endif
+
+/* Min stacksize for a task */
+#ifndef PORTMAXDELAY
+#define PORTMAXDELAY 30000  
 #endif
 
 /* debug option */
@@ -132,10 +137,7 @@ void eos_initial();
 int eos_start(int ts, int max_delay) ;
 /*---------------------------------------------------------------------------------------------------*/
 ///*--------------------------------------------debug functions----------------------------------------*/
-///* Prints the task queue */
-//void eos_print_queue(void);
-///* Prints the task stack */
-//void eos_print_stack(char *stack, int bytes);
+
 /*---------------------------------------------------------------------------------------------------*/
 
 #ifdef __cplusplus
