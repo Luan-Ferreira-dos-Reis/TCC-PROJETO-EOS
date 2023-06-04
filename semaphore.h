@@ -1,7 +1,7 @@
 #ifndef _SEMAPHORE_H_
 #define _SEMAPHORE_H_
 
-
+#include "eos.h"
 
 #ifdef __cplusplus
 extern "C" {

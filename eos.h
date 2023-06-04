@@ -80,6 +80,9 @@
   preempt = 0; \
   }  while(0)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*------------------------------------------------------------------------------------------------------ */
 /**
@@ -128,13 +131,15 @@ void eos_initial();
 /* Starts the Arduous kernel */
 int eos_start(int ts, int max_delay) ;
 /*---------------------------------------------------------------------------------------------------*/
-/*--------------------------------------------debug functions----------------------------------------*/
-/* Prints the task queue */
-void eos_print_queue(void);
-/* Prints the task stack */
-void eos_print_stack(char *stack, int bytes);
+///*--------------------------------------------debug functions----------------------------------------*/
+///* Prints the task queue */
+//void eos_print_queue(void);
+///* Prints the task stack */
+//void eos_print_stack(char *stack, int bytes);
 /*---------------------------------------------------------------------------------------------------*/
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _EOS_H_ */
