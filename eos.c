@@ -412,7 +412,7 @@ int eos_start(int ts, int max_delay) {
     
     /* Set the size of a timeslice  and port_max_delay from parameter */
     time_slice = ts;
-    if(max_delay > PORTMAXDELAY) max_delay = PORTMAXDELAY;
+    if(max_delay > PORTMAXDELAY){ max_delay = PORTMAXDELAY;}
     port_max_delay = max_delay; 
 
     /* Used by eos_switch_task for the first task switch */

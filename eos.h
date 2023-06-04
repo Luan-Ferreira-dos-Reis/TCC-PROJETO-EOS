@@ -29,7 +29,7 @@
 
 /* Min stacksize for a task */
 #ifndef PORTMAXDELAY
-#define PORTMAXDELAY 30000  
+#define PORTMAXDELAY 25000  
 #endif
 
 /* debug option */

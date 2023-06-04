@@ -127,13 +127,13 @@ void imprimir2(void *p){
     Serial.println("tarefa2 f"); 
     delay(100);
     if(eos_semaphore_take(&serialSemaphore)){ /* pega um semáforo e escreve na serial */
-        Serial.println("nao desista dos seus sonhos até porque você já ouviu "); delay(500);
+        Serial.println("não, não desista dos seus sonhos até porque você já ouviu "); delay(500);
         Serial.println("falar em cabo de vassoura, supunhetamos que você vai Ter a vida que"); delay(500);
         Serial.println("você é hoje, Daqui uns anos, Num sei, Vai que  Nasça uma planta Pra sobreviver"); delay(500);
         Serial.println("E q a.. Pode ser que mude A alternativa Do.. Dom pedro segundo e o padre quando"); delay(500); 
         Serial.println("for rezar a missa Vai querer uma Latinha de cerveja E aí? interprete..."); delay(500);
-       eos_semaphore_give(&serialSemaphore);
-      }
+     eos_semaphore_give(&serialSemaphore);
+     }
     }
   }
 
