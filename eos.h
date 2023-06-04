@@ -23,9 +23,9 @@
       GIVE A SEMAPHORE   -> eos_semaphore_give(eos_semaphore *semaphore)
    CREATE A QUEUE        -> eos_create_queue(eos_queue *semaphore, int sizeOfQueue, int sizeOfType[obs: sizeof(int) or sizeof(float) or sizeof(char)])
       WRITE IN QUEUE     -> eos_queue_write(eos_queue *queue, *value) obs: only overwrite
-      READ FROM QUEUE    -> eos_queue_read(eos_queue *queue)          obs: only read the a value
+      READ FROM QUEUE    -> eos_queue_read(eos_queue *queue)          obs: only read the a value and return: (void*) need to cast
       SEND TO QUEUE      -> eos_queue_send(eos_queue *queue, *value)  obs: push a element and increase the queue
-      RECEIVE FROM QUEUE -> eos_queue_receive(eos_queue *queue)       obs: pop a element and reduce the queue
+      RECEIVE FROM QUEUE -> eos_queue_receive(eos_queue *queue)       obs: pop a element and reduce the queue and return: (void*) need to cast
  -----------------------------------------------------------------------------------------------------------------------------------*/
 
 #ifndef _EOS_H_
