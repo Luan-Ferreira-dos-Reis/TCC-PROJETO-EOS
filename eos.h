@@ -1,6 +1,21 @@
 /*
     EMBEDDED OPERATING SYSTEM - EOS
+
+    It is an operating system for the Arduino platform. Among the project's features are:
     
+    Preemptive scheduling in round roubin (with option to choose timeslice)
+    Implementation of basic aspects of queues and semaphores
+    Flexibility to use all timers (0, 1, 2, 3, 4, 5) of the arduino
+    Flexibility in the size of the battery needed to run the processes
+    Reusing task codes with different arguments (void function(void *arg))
+    This project is being built for a course conclusion discipline.
+    
+    From a reasonable modified of the following code:
+    https://github.com/SneManden/arduous/tree/master
+
+    Author: Luan Ferreira dos Reis - github: https://github.com/Luan-Ferreira-dos-Reis/TCC-PROJETO-EOS
+
+    [PORTUGUESE]
     É um sistema operacional para plataforma Arduino Entre as características do projeto estão:
     
     Escalonamento preemptivo em round roubin (com opção de escolha do timeslice)
