@@ -3,9 +3,11 @@
 /* Task pool */
 static struct eos_task *task_pool = NULL;
 /* Pointer to head of task queue (NULL if empty) */
-static struct eos_task **task_queue;
+static struct eos_task *task_queue[5] = {NULL, NULL, NULL, NULL, NULL};
 /* Pointer to currently running task (NULL if none) */
 static struct eos_task *current_task = NULL;
+/* Pointer to currently when a task finished (NULL if none) */
+static struct eos_task *next_task = NULL;
 /* dummy pool */
 static struct eos_task dummy, dummy2;
 /* Timeslice */
@@ -14,7 +16,7 @@ static int time_count;
 int preempt; /* non static, will be modified by semaphore archive. Enable or disable context switch using when semaphores work(preempt = 0) */
 static int port_max_delay; /* max delay permited to semaphores */
 static int task_count = 0;
-static int layers_priority; /* number of layers of priority run*/
+static int layers_priority = 1; /* number of layers of priority run*/
 static int current_layer = 0; /* actual layers of priority run*/
 /*-------------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------Task-------------------------------------------------------*/
@@ -167,11 +169,9 @@ void make_callfunc(void){
 void eos_initial(int layers){ 
   /* create layers of priority to run */
   layers_priority = layers;
-  task_queue = (eos_task**)malloc(layers * sizeof(eos_task));
-   task_queue[current_layer] = NULL;
-  for(int l = 0; l < layers; l++){
-    task_queue[l] = NULL;
-  }
+//  for(int l = 0; l < layers; l++){
+//    task_queue[l] = NULL;
+//  }
 }
 /**
  * Initializes the kernel by setting up the interrupt routine to fire each 1 ms
@@ -227,6 +227,7 @@ int eos_start(int ts, int max_delay) {
 
     /* Used by eos_switch_task for the first task switch */
     current_task = &dummy;
+    current_layer = 0; ;
     DISABLE_INTERRUPTS();
     eos_switch_task();
     ENABLE_INTERRUPTS();

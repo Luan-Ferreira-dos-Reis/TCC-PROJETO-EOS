@@ -54,19 +54,21 @@
 #define upper8(X) ((unsigned char)((unsigned int)(X) >> 8))
 /* Performs a context switch by setting stack pointer among tasks */
 #define eos_context_switch() do { \
-    if (current_task != NULL && task_queue[current_layer] != NULL && \
-        current_task != task_queue[current_layer]) { \
-  init: current_task->sp_low = SPL; \
-        current_task->sp_high = SPH; \
-        current_task = task_queue[current_layer]; \
-        task_queue[current_layer] = task_queue[current_layer]->next; \
-        SPL = current_task->sp_low; \
-        SPH = current_task->sp_high;} \
-    if(task_queue[current_layer] == NULL){ \
-        current_layer += 1; \
-        if(current_layer == layers_priority) \
-          {current_layer = 0;}  \
-        else{goto init;} \
+init: if (current_task != NULL && task_queue[current_layer] != NULL && \
+          current_task != task_queue[current_layer]) { \
+          current_task->sp_low = SPL; \
+          current_task->sp_high = SPH; \
+          current_task = task_queue[current_layer]; \
+          task_queue[current_layer] = task_queue[current_layer]->next; \
+          SPL = current_task->sp_low; \
+          SPH = current_task->sp_high;} \
+      else if(current_task == NULL && task_queue[current_layer] != NULL){ \
+          current_task = next_task; \
+          goto init; \
+        } \
+      else if(task_queue[current_layer] == NULL && current_layer < layers_priority){ \
+        current_layer++; \
+        goto init; \
      } } while(0)
 
 /* Removes  e the current task from task queue for in case the current task is complete */
@@ -75,9 +77,10 @@
         task_queue[current_layer] = NULL; \
     else if (current_task == task_queue[current_layer]) \
         task_queue[current_layer] = current_task->next; \
-    current_task->state = FINISHED; \
     current_task->prev->next = current_task->next; \
     current_task->next->prev = current_task->prev; \
+    next_task = current_task; \
+    current_task = NULL; \
   } while(0)
  
 /* Enable and disable preemption */   /* LUAN FERREIRA DOS REIS */

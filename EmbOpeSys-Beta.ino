@@ -6,9 +6,10 @@
 #define AOUT       7
 #define LED_BLINK  13
 #define LED_BLINK2  9
+#define LED_BLINK3  7
 
 /*inicialização de tarefas, filas e semáforos*/
-eos_task p, p2, st, i, i2, i3, i4;
+eos_task p, p2, p3,st, i, i2, i3, i4;
 eos_semaphore serialSemaphore;
 eos_queue valueint;
 
@@ -27,18 +28,20 @@ void setup() {
      *  Parâmetros passados as tarefas.
      *  Obs: precisam ser passados por referencia (&arg1, &arg2, &arg3...)
      */
-    int num = 63;;
-    char letra = 'a';
-    float G = 6.67384;
+    int num = 63, num2 = 32;
+    char letra = 'a', letra2 = 'b';
+    float G = 6.67384, C = 2.99792458;
     int led1 = LED_BLINK;
     int led2 = LED_BLINK2;
+    int led3 = LED_BLINK3;
     Serial.begin(9600);
-      eos_initial(3);
+
+     eos_initial(3);
     /* Criando semáforo eos_create_semaphore()*/ 
       serialSemaphore = eos_create_semaphore(); 
     /* Criando fila eos_create_queue(num_elementos >= 1, tam_elementos)*/ 
       valueint = eos_create_queue(4, sizeof(int));
-
+ 
     /* Criando tarefas eos_create_task(handler ,codigo, argumento(endereço), tam_pilha(128-1024)bytes) valores testados por enquanto)*/ 
     Serial.println("Creating task....................................................................");delay(1000);
     eos_create_task(&p, piscar, &led1, 256, 2);
@@ -102,11 +105,13 @@ void imprimir(void *p){
   int n = *(int*)p; /* recebe um endereço como parâmetro e transforma em inteiro */
   int exe = 1; /* quantidade de execuções da tarefa */
   //while(1){
-    for(int i = 0; i < 20; i++){
-    Serial.print("tarefa1 inicio "); Serial.println(exe);
+    for(int i = 0; i < 10; i++){
+    Serial.print("tarefa1 inicio "); 
+    Serial.println(exe);
     exe++;
     eos_queue_write(&valueint,&n); /* escreve o valor recebido em uma fila */
-    Serial.print("valor enviado: "); Serial.println(n);
+    Serial.print("valor enviado: "); 
+    Serial.println(n);
     n++;  /* altera o valor */   
     delay(300);
     Serial.println("tarefa1 meio");
@@ -118,19 +123,19 @@ void imprimir(void *p){
 
 void imprimir2(void *p){
   char l = *(char*)p; /* recebe um endereço como parâmetro e transforma em char */
-  int _max = 10; /* quantidade de execuções da tarefa */       
+  int _max = 5; /* quantidade de execuções da tarefa */       
   for(int i = 0; i < _max; i++){
     Serial.print("tarefa2 inicio "); Serial.println(i+1); /* essa tarefa tem executa uma quantidade de vezes */
     delay(200);
     Serial.print("tarefa2 meio: recebi o char: "); Serial.println(l);
     delay(700);
     if(eos_semaphore_take(&serialSemaphore)){ /* pega um semáforo e escreve na serial */
-        Serial.println("não, não desista dos seus sonhos até porque você já ouviu "); delay(500);
-        Serial.println("falar em cabo de vassoura, supunhetamos que você vai Ter a vida que"); delay(500);
-        Serial.println("você é hoje, Daqui uns anos, Num sei, Vai que  Nasça uma planta Pra sobreviver"); delay(500);
-        Serial.println("E q a.. Pode ser que mude A alternativa Do.. Dom pedro segundo e o padre quando"); delay(500); 
-        Serial.println("for rezar a missa Vai querer uma Latinha de cerveja E aí? interprete..."); delay(500);
-     eos_semaphore_give(&serialSemaphore);
+        Serial.println("não, não desista dos seus sonhos até porque você já ouviu "); delay(200);
+        Serial.println("falar em cabo de vassoura, supunhetamos que você vai Ter a vida que"); delay(200);
+        Serial.println("você é hoje, Daqui uns anos, Num sei, Vai que  Nasça uma planta Pra sobreviver"); delay(200);
+        Serial.println("E q a.. Pode ser que mude A alternativa Do.. Dom pedro segundo e o padre quando"); delay(200); 
+        Serial.println("for rezar a missa Vai querer uma Latinha de cerveja E aí? interprete..."); delay(200);
+        eos_semaphore_give(&serialSemaphore);
      }
      Serial.println("tarefa2 fim"); 
      delay(100);
@@ -141,10 +146,12 @@ void imprimir2(void *p){
   float r = *(float*)p;  /* recebe um endereço como parâmetro e transforma em char */
   int exe = 1; /* quantidade de execuções da tarefa */
   //while(1){ /* quantidade de execuções da tarefa */
-    for(int i = 0; i < 15; i++){
-    Serial.print("tarefa3 inicio "); Serial.println(exe);
+    for(int i = 0; i < 10; i++){
+    Serial.print("tarefa3 inicio "); 
+    Serial.println(exe);
     exe++;
-    Serial.print("recebi o valor: "); Serial.println(r);
+    Serial.print("recebi o valor: "); 
+    Serial.println(r);
     delay(200);
     Serial.println("tarefa3 meio");
     delay(400);
@@ -155,11 +162,13 @@ void imprimir2(void *p){
 
  void imprimir4(void *p){
   int received;
-  int _max = 20; /* quantidade de execuções da tarefa */
-  for(int i = 0; i < _max; i++){
-    Serial.print("tarefa4 inicio "); Serial.println(i+1);
+  int maximum = 10; /* quantidade de execuções da tarefa */
+  for(int i = 0; i < maximum; i++){
+    Serial.print("tarefa4 inicio "); 
+    Serial.println(i+1);
     received = *(int*)eos_queue_read(&valueint); /* ler valores de uma pilha */
-    Serial.print("valor recebido: ");Serial.println(received); /* escreve valor lido */
+    Serial.print("valor recebido: ");
+    Serial.println(received); /* escreve valor lido */
     delay(100);
     Serial.println("tarefa4 meio");
     delay(300);
@@ -167,6 +176,21 @@ void imprimir2(void *p){
     delay(600);
     }
   }
+
+// void imprimir5(void *p){
+//  float r = *(float*)p;  /* recebe um endereço como parâmetro e transforma em char */
+//  //while(1){ /* quantidade de execuções da tarefa */
+//    for(int i = 0; i < 10; i++){
+//    Serial.println("tarefa5 inicio "); 
+//    Serial.print("recebi o valor: "); 
+//    Serial.println(r);
+//    delay(200);
+//    Serial.println("tarefa5 meio");
+//    delay(400);
+//    Serial.println("tarefa5 fim"); 
+//    delay(200);
+//    }
+//  }
 
 /*------------------------------------------------------------- TESTE 2 ------------------------------------------------------------*/
 /*
