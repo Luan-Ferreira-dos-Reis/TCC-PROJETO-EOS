@@ -17,53 +17,6 @@ static int task_count = 0;
 /*-------------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------Task-------------------------------------------------------*/
 /**
- * Insert *task into back of queue by modifying pointers of the head and tail
- * of the queue, and the pointers of *task itself.
- * @param head   Head of the queue
- * @param task The task to insert into the queue
- */
-void eos_enqueue(struct eos_task *task) {
-    if (task_queue == NULL) { /* If empty, just set task to be head */
-        task_queue = task;
-        task->next = task;
-        task->prev = task;
-    } else { /* not empty => add to the back of the queue */
-        struct eos_task *head = task_queue;
-        struct eos_task *tail = head->prev;
-        head->prev = task;
-        tail->next = task;
-        task->prev = tail;
-        task->next = head;
-    }
-}
-/**
- * Removes an element from the queue by updating pointers. Returns the element
- * @param  task The task to remove from the queue
- * @return        Pointer to the element
- */
-struct eos_task *eos_dequeue(struct eos_task *task) {
-    /* If 1 element in queue => now empty */
-    if (task_queue->prev == task_queue->next)
-        task_queue = NULL;
-    else if (task == task_queue) /* If task is head of queue */
-        task_queue = task->next; /* => task_queue points to new head */
-    task->prev->next = task->next;
-    task->next->prev = task->prev;
-    return task;
-}
-/**
- * Nothing, absolutely nothing
- * add it to the queue of tasks
- * @param  void pointer only to beform other task code
- * @return        nothing
- */
-void idle_task(void *args) {
-  int i = 0;
-  while(1){
-      i++; 
-  }
-}
-/**
  * Creates a new task by allocating a new stack, clear it, save SP and
  * add it to the queue of tasks
  * @param  runner Pointer to function where the task resides
@@ -136,6 +89,53 @@ int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *
     eos_enqueue(new_task);
     
     return 0;
+}
+/**
+ * Insert *task into back of queue by modifying pointers of the head and tail
+ * of the queue, and the pointers of *task itself.
+ * @param head   Head of the queue
+ * @param task The task to insert into the queue
+ */
+void eos_enqueue(struct eos_task *task) {
+    if (task_queue == NULL) { /* If empty, just set task to be head */
+        task_queue = task;
+        task->next = task;
+        task->prev = task;
+    } else { /* not empty => add to the back of the queue */
+        struct eos_task *head = task_queue;
+        struct eos_task *tail = head->prev;
+        head->prev = task;
+        tail->next = task;
+        task->prev = tail;
+        task->next = head;
+    }
+}
+/**
+ * Removes an element from the queue by updating pointers. Returns the element
+ * @param  task The task to remove from the queue
+ * @return        Pointer to the element
+ */
+struct eos_task *eos_dequeue(struct eos_task *task) {
+    /* If 1 element in queue => now empty */
+    if (task_queue->prev == task_queue->next)
+        task_queue = NULL;
+    else if (task == task_queue) /* If task is head of queue */
+        task_queue = task->next; /* => task_queue points to new head */
+    task->prev->next = task->next;
+    task->next->prev = task->prev;
+    return task;
+}
+/**
+ * Nothing, absolutely nothing
+ * add it to the queue of tasks
+ * @param  void pointer only to beform other task code
+ * @return        nothing
+ */
+void idle_task(void *args) {
+  int i = 0;
+  while(1){
+      i++; 
+  }
 }
 /**
  * perform call to task code
