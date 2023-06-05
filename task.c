@@ -1,9 +1,9 @@
 #include "task.h"
-/*-------------------------------------Global Variables----------------------------------------------*/
+/*-------------------------------------Global Variables------------------------------------------------*/
 /* Task pool */
 static struct eos_task *task_pool = NULL;
 /* Pointer to head of task queue (NULL if empty) */
-static struct eos_task *task_queue = NULL;
+static struct eos_task **task_queue;
 /* Pointer to currently running task (NULL if none) */
 static struct eos_task *current_task = NULL;
 /* dummy pool */
@@ -14,6 +14,8 @@ static int time_count;
 int preempt; /* non static, will be modified by semaphore archive. Enable or disable context switch using when semaphores work(preempt = 0) */
 static int port_max_delay; /* max delay permited to semaphores */
 static int task_count = 0;
+static int layers_priority; /* number of layers of priority run*/
+static int current_layer = 0; /* actual layers of priority run*/
 /*-------------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------Task-------------------------------------------------------*/
 /**
@@ -22,7 +24,7 @@ static int task_count = 0;
  * @param  runner Pointer to function where the task resides
  * @return        0 on success; -1 on error
  */
-int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *arg, int size_stack) { /* LUAN FERREIRA DOS REIS */
+int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *arg, int size_stack, int priority) { /* LUAN FERREIRA DOS REIS */
     int i;
     char *stack;
 
@@ -86,7 +88,7 @@ int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *
     /* *stack is now the stack pointer. Add the task to the queue */
     new_task->sp_low = lower8(stack);
     new_task->sp_high = upper8(stack);
-    eos_enqueue(new_task);
+    eos_enqueue(new_task, priority);
     
     return 0;
 }
@@ -96,13 +98,13 @@ int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *
  * @param head   Head of the queue
  * @param task The task to insert into the queue
  */
-void eos_enqueue(struct eos_task *task) {
-    if (task_queue == NULL) { /* If empty, just set task to be head */
-        task_queue = task;
+void eos_enqueue(struct eos_task *task, int layer) {
+    if (task_queue[layer] == NULL) { /* If empty, just set task to be head */
+        task_queue[layer] = task;
         task->next = task;
         task->prev = task;
     } else { /* not empty => add to the back of the queue */
-        struct eos_task *head = task_queue;
+        struct eos_task *head = task_queue[layer];
         struct eos_task *tail = head->prev;
         head->prev = task;
         tail->next = task;
@@ -115,12 +117,12 @@ void eos_enqueue(struct eos_task *task) {
  * @param  task The task to remove from the queue
  * @return        Pointer to the element
  */
-struct eos_task *eos_dequeue(struct eos_task *task) {
+struct eos_task *eos_dequeue(struct eos_task *task, int layer) {
     /* If 1 element in queue => now empty */
-    if (task_queue->prev == task_queue->next)
-        task_queue = NULL;
-    else if (task == task_queue) /* If task is head of queue */
-        task_queue = task->next; /* => task_queue points to new head */
+    if (task_queue[layer]->prev == task_queue[layer]->next)
+        task_queue[layer] = NULL;
+    else if (task == task_queue[layer]) /* If task is head of queue */
+        task_queue[layer] = task->next; /* => task_queue points to new head */
     task->prev->next = task->next;
     task->next->prev = task->prev;
     return task;
@@ -157,12 +159,19 @@ void make_callfunc(void){
 /*-------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------Kernel functions----------------------------------------*/
 /**
- * perform initial values to kernel
- * create idle task, create task pool
- * @param  int number of tasks
+ * perform priority schedule round robin
+ * create layers of priority
+ * @param  int number of priority
  * @return void
  */
-void eos_initial(){  
+void eos_initial(int layers){ 
+  /* create layers of priority to run */
+  layers_priority = layers;
+  task_queue = (eos_task**)malloc(layers * sizeof(eos_task));
+   task_queue[current_layer] = NULL;
+  for(int l = 0; l < layers; l++){
+    task_queue[l] = NULL;
+  }
 }
 /**
  * Initializes the kernel by setting up the interrupt routine to fire each 1 ms
@@ -173,9 +182,9 @@ void eos_initial(){
  */
 int eos_start(int ts, int max_delay) {
     /* Create 2 idle task that always run in eos*/
-    eos_create_task(&dummy, idle_task, NULL, TASKMINSTACKSIZE);
+    eos_create_task(&dummy, idle_task, NULL, TASKMINSTACKSIZE, layers_priority-1);
     
-    if (task_queue == NULL)
+    if (task_queue[current_layer] == NULL)
         return -1;
 
     DISABLE_INTERRUPTS();

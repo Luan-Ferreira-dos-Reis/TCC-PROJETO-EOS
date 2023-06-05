@@ -33,7 +33,7 @@ void setup() {
     int led1 = LED_BLINK;
     int led2 = LED_BLINK2;
     Serial.begin(9600);
-    
+      eos_initial(3);
     /* Criando semáforo eos_create_semaphore()*/ 
       serialSemaphore = eos_create_semaphore(); 
     /* Criando fila eos_create_queue(num_elementos >= 1, tam_elementos)*/ 
@@ -41,13 +41,13 @@ void setup() {
 
     /* Criando tarefas eos_create_task(handler ,codigo, argumento(endereço), tam_pilha(128-1024)bytes) valores testados por enquanto)*/ 
     Serial.println("Creating task....................................................................");delay(1000);
-    //eos_create_task(&p, piscar, &led1, 256);
-    //eos_create_task(&p2, piscar, &led2, 256);
-    //eos_create_task(&st, SineTask, NULL, 256);
-    eos_create_task(&i, imprimir, &num, 256);
-    eos_create_task(&i2, imprimir2, &letra, 256);
-    eos_create_task(&i3, imprimir3, &G, 256);
-    eos_create_task(&i4, imprimir4, NULL, 256);
+    eos_create_task(&p, piscar, &led1, 256, 2);
+    eos_create_task(&p2, piscar, &led2, 256, 2);
+    eos_create_task(&st, SineTask, NULL, 256, 2);
+    eos_create_task(&i, imprimir, &num, 256, 1);
+    eos_create_task(&i2, imprimir2, &letra, 256, 0);
+    eos_create_task(&i3, imprimir3, &G, 256, 0);
+    eos_create_task(&i4, imprimir4, NULL, 256, 1);
     
     /* inicia o sistema eos_start(time slice, portMaxDelay)  max_delay(max 25000ms)*/
     eos_start(5, 10000);    
@@ -194,6 +194,7 @@ void imprimir2(void *p){
 //     *  Parâmetros passados as tarefas.
 //     *  Obs: precisam ser passados por referencia (&arg1, &arg2, &arg3...)
 //     */
+//    eos_initial(1);
 //    Serial.begin(9600);
 //    /* Criando semáforo eos_create_semaphore()*/ 
 //    serialSemaphore = eos_create_semaphore();
@@ -204,10 +205,10 @@ void imprimir2(void *p){
 //    
 //    /*Criando tarefas eos_create_task(handler task, codigo, argumento(endereço), tam_pilha(256-1024)bytes))*/   
 //    Serial.println("Creating task....................................................................");delay(1000);
-//    eos_create_task(&t1, task1, NULL, 128);
-//    eos_create_task(&t2, task2, NULL, 128);
-//    eos_create_task(&t3, task3, NULL, 128);
-//    eos_create_task(&t4, task4, NULL, 128);
+//    eos_create_task(&t1, task1, NULL, 128, 0);
+//    eos_create_task(&t2, task2, NULL, 128, 0);
+//    eos_create_task(&t3, task3, NULL, 128, 0);
+//    eos_create_task(&t4, task4, NULL, 128, 0);
 //  
 //    /* inicia o sistema com valor de time slice e tempo máximo de ocupaçao de semáforos eos_start(time_slice, max_delay)*/
 //    eos_start(5, 5000);    
