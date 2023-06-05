@@ -6,7 +6,7 @@
     Preemptive scheduling in round roubin (with option to choose timeslice)
     Implementation of basic aspects of queues and semaphores
     Flexibility to use all timers (0, 1, 2, 3, 4, 5) of the arduino
-    Flexibility in the size of the battery needed to run the processes
+    Flexibility in the size of the stack needed to run the processes
     Reusing task codes with different arguments (void function(void *arg))
     This project is being built for a course conclusion discipline.
     
