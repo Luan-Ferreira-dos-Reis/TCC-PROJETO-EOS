@@ -17,7 +17,7 @@ typedef struct eos_semaphore{
 /*-------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /* Creates a new semaphore */
-struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore);
+struct eos_semaphore eos_create_semaphore();
 /* Take a created semaphore*/
 int eos_semaphore_take(eos_semaphore* semaphore);
 /* free a lock semaphore*/

@@ -7,10 +7,11 @@ static int queue_count = 0;
 /*-------------------------------------------Queue-------------------------------------------------*/
 /*
  * Create a queue to share date
- * @param  handler to semaphore, size queue
+ * @param  size queue, size_elements
  * @return        a queue
  */
-struct eos_queue eos_create_queue(eos_queue *q, int size_queue, int size_elements){
+struct eos_queue eos_create_queue(int size_queue, int size_elements){
+  eos_queue *q;
   /* Get a new queue from the queue pool */
   queue_pool = (eos_queue*)realloc(queue_pool,(queue_count + 1) * sizeof(eos_queue));
   q = &queue_pool[queue_count];

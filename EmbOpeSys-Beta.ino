@@ -34,16 +34,16 @@ void setup() {
     int led2 = LED_BLINK2;
     Serial.begin(9600);
     
-    /* Criando semáforo eos_create_semaphore(&nome_semaforo)*/ 
-      serialSemaphore = eos_create_semaphore(&serialSemaphore); 
-    /* Criando fila eos_create_queue(&nome_fila, num_elementos >= 1, tam_elementos)*/ 
-      valueint = eos_create_queue(&valueint, 4, sizeof(int));
+    /* Criando semáforo eos_create_semaphore()*/ 
+      serialSemaphore = eos_create_semaphore(); 
+    /* Criando fila eos_create_queue(num_elementos >= 1, tam_elementos)*/ 
+      valueint = eos_create_queue(4, sizeof(int));
 
     /* Criando tarefas eos_create_task(handler ,codigo, argumento(endereço), tam_pilha(128-1024)bytes) valores testados por enquanto)*/ 
     Serial.println("Creating task....................................................................");delay(1000);
-    eos_create_task(&p, piscar, &led1, 256);
-    eos_create_task(&p2, piscar, &led2, 256);
-    eos_create_task(&st, SineTask, NULL, 256);
+    //eos_create_task(&p, piscar, &led1, 256);
+    //eos_create_task(&p2, piscar, &led2, 256);
+    //eos_create_task(&st, SineTask, NULL, 256);
     eos_create_task(&i, imprimir, &num, 256);
     eos_create_task(&i2, imprimir2, &letra, 256);
     eos_create_task(&i3, imprimir3, &G, 256);
@@ -195,12 +195,12 @@ void imprimir2(void *p){
 //     *  Obs: precisam ser passados por referencia (&arg1, &arg2, &arg3...)
 //     */
 //    Serial.begin(9600);
-//    /* Criando semáforo eos_create_semaphore(&nome_semaforo)*/ 
-//    serialSemaphore = eos_create_semaphore(&serialSemaphore);
+//    /* Criando semáforo eos_create_semaphore()*/ 
+//    serialSemaphore = eos_create_semaphore();
 //       
-//    /* Criando fila eos_create_queue(&nome_fila, num_elementos, tam_elementos)*/ 
-//     datachar = eos_create_queue(&datachar, 5, sizeof(char));
-//     measurefloat = eos_create_queue(&measurefloat, 10, sizeof(float));
+//    /* Criando fila eos_create_queue(num_elementos, tam_elementos)*/ 
+//     datachar = eos_create_queue(5, sizeof(char));
+//     measurefloat = eos_create_queue(5, sizeof(float));
 //    
 //    /*Criando tarefas eos_create_task(handler task, codigo, argumento(endereço), tam_pilha(256-1024)bytes))*/   
 //    Serial.println("Creating task....................................................................");delay(1000);
@@ -271,7 +271,7 @@ void imprimir2(void *p){
 //    Serial.println("Task 4 was started");
 //    while (1) {
 //        /* envia os valores para fila */
-//        measure = micros()/cte; //random(10)/cte;
+//        measure = millis(); //random(10)/cte;
 //        eos_queue_send(&measurefloat, &measure);
 //        /* cria um novo valor */
 //        Serial.print("4: SEND: "); Serial.println(measure);

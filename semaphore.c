@@ -6,10 +6,11 @@ static int semaphore_count = 0;
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /*
  * Creates a new semaphore 
- * @param  handler to semaphore
+ * @param  void
  * @return        a semaphore
  */
-struct eos_semaphore eos_create_semaphore(eos_semaphore *new_semaphore){
+struct eos_semaphore eos_create_semaphore(){
+  eos_semaphore *new_semaphore;
   /* Get a new semaphore from the semaphore pool */
     semaphore_pool = (eos_semaphore*)realloc(semaphore_pool, (semaphore_count + 1) * sizeof(eos_semaphore));
     new_semaphore = &semaphore_pool[semaphore_count];
