@@ -41,8 +41,6 @@ void setup() {
       serialSemaphore = createSemaphore(); 
     /* Criando fila eos_create_queue(numElementos >= 1, sizeof(type))*/ 
       valueint = createQueue(4, sizeof(int));
-    /* Escolhe o número de camadas de prioridade */
-    initial(2);
     /* Criando tarefas createTask(handler ,void codigo,void *argumento(endereço), int sizeOfStack(128-1024)bytes, int priority) valores testados por enquanto)*/ 
     Serial.println("Creating task....................................................................");delay(1000);
     createTask(&p, piscar, &led1, 256, 1);

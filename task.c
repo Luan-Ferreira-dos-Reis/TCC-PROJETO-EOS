@@ -90,6 +90,10 @@ int createTask(Task *newTask, void (*runner)(void *runnerArg), void *arg, int si
     /* *stack is now the stack pointer. Add the task to the queue */
     newTask->spLow = lower8(stack);
     newTask->spHigh = upper8(stack);
+
+    /* ensure validate number of layer of priority [priority0, priority1, ..., priorityX]*/
+    if(priority >= layersPriority){ layersPriority = priority + 1;}
+    /* add the task to queueTask[layer]*/
     enqueue(newTask, priority);
     
     return 0;
