@@ -10,18 +10,18 @@ extern "C" {
 extern int preempt;
 
 /*A bynary semaphore*/
-typedef struct eos_semaphore{
+typedef struct Semaphore{
   int unlock; /* can assume busy => unlock == 0 and free => unlock = 1*/ 
-}eos_semaphore;
+}Semaphore;
 
 /*-------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /* Creates a new semaphore */
-struct eos_semaphore eos_create_semaphore();
+struct Semaphore createSemaphore(void);
 /* Take a created semaphore*/
-int eos_semaphore_take(eos_semaphore* semaphore);
+int semaphoreTake(Semaphore* semaphore);
 /* free a lock semaphore*/
-void eos_semaphore_give(eos_semaphore* semaphore);
+void semaphoreGive(Semaphore* semaphore);
 /*-------------------------------------------------------------------------------------------------*/
 
 #ifdef __cplusplus

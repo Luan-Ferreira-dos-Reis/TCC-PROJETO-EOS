@@ -1,30 +1,30 @@
 #include "semaphore.h"
 
 /* Semaphore pool */
-static struct eos_semaphore *semaphore_pool = NULL;
-static int semaphore_count = 0;
+static struct Semaphore *semaphorePool = NULL;
+static int semaphoreCount = 0;
 /*----------------------------------------Semaphores-----------------------------------------------*/
 /*
  * Creates a new semaphore 
  * @param  void
  * @return        a semaphore
  */
-struct eos_semaphore eos_create_semaphore(){
-  eos_semaphore *new_semaphore;
+struct Semaphore createSemaphore(void){
+  Semaphore *newSemaphore;
   /* Get a new semaphore from the semaphore pool */
-    semaphore_pool = (eos_semaphore*)realloc(semaphore_pool, (semaphore_count + 1) * sizeof(eos_semaphore));
-    new_semaphore = &semaphore_pool[semaphore_count];
+    semaphorePool = (Semaphore*)realloc(semaphorePool, (semaphoreCount + 1) * sizeof(Semaphore));
+    newSemaphore = &semaphorePool[semaphoreCount];
   /*initialize semaphore free*/
-    new_semaphore->unlock = 1;
-    semaphore_count++;
-    return *new_semaphore; 
+    newSemaphore->unlock = 1;
+    semaphoreCount++;
+    return *newSemaphore; 
 }
 /**
  * A task can take a semaphore to apropriate hardware recurse
  * @param  semaphore
  * @return        0 if semaphore is avaible; 0 if not
  */
-int eos_semaphore_take(eos_semaphore* semaphore){ 
+int semaphoreTake(Semaphore* semaphore){ 
   /* test if semaphore is unlock*/
   DISABLE_INTERRUPTS();
   if(semaphore->unlock == 1){
@@ -44,7 +44,7 @@ int eos_semaphore_take(eos_semaphore* semaphore){
  * @param  semaphore
  * @return        void
  */
-void eos_semaphore_give(eos_semaphore* semaphore){
+void semaphoreGive(Semaphore* semaphore){
   /* test if semaphore is lock*/
   DISABLE_INTERRUPTS();
   if(semaphore->unlock == 0){

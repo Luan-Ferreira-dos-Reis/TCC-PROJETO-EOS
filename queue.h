@@ -8,31 +8,31 @@ extern "C" {
 #endif
 
 /* queue to share data */ 
-typedef struct eos_queue{
-    int size_queue;       /* size of queue */
-    int size_elements;    /* size of elements to work */
+typedef struct Queue{
+    int sizeQueue;       /* size of queue */
+    int sizeElements;    /* size of elements to work */
     int *data;          /* array of element int */
     float *value;          /* array of element float*/
     char *mensg;          /* array of element char*/
-}eos_queue;
+}Queue;
 
 /*-------------------------------------------Queue-------------------------------------------------*/
 /* create a queue to share date */
-struct eos_queue eos_create_queue(int size_queue, int size_elements);
+struct Queue createQueue(int sizeQueue, int sizeElements);
 /* loss the last element of the queue data[sizeQueue-1] and write on the first data[0]. Obs: begin of queue [last element of array] or the first in*/
-void eos_queue_write(eos_queue *q, void *value);
+void queueWrite(Queue *queue, void *value);
 /* Add elements to the begin of the queue and increase the queue*/
-void eos_queue_send(eos_queue *q, void *value);
+void queueSend(Queue *queue, void *value);
 /* FIFO first in first out return the last element to in */
-void *eos_queue_read(eos_queue *q);
-int eos_queue_read_int(eos_queue *q);
-float eos_queue_read_float(eos_queue *q);
-char eos_queue_read_char(eos_queue *q);
+void *queueRead(Queue *queue);
+int queueReadInt(Queue *queue);
+float queueReadFloat(Queue *queue);
+char queueReadChar(Queue *queue);
 /* receive a element of queue and remove the element */
-void *eos_queue_receive(eos_queue *q);
-int eos_queue_receive_int(eos_queue *q);
-float eos_queue_receive_float(eos_queue *q);
-char eos_queue_receive_char(eos_queue *q);
+void *queueReceive(Queue *queue);
+int queueReceiveInt(Queue *queue);
+float queueReceiveFloat(Queue *queue);
+char queueReceiveChar(Queue *queue);
 /*--------------------------------------------------------------------------------------------------*/
 
 #ifdef __cplusplus

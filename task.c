@@ -1,23 +1,23 @@
 #include "task.h"
 /*-------------------------------------Global Variables------------------------------------------------*/
 /* Task pool */
-static struct eos_task *task_pool = NULL;
+static struct Task *taskPool = NULL;
 /* Pointer to head of task queue (NULL if empty) */
-static struct eos_task *task_queue[5] = {NULL, NULL, NULL, NULL, NULL};
+static struct Task *taskQueue[5] = {NULL, NULL, NULL, NULL, NULL};
 /* Pointer to currently running task (NULL if none) */
-static struct eos_task *current_task = NULL;
+static struct Task *currentTask = NULL;
 /* Pointer to currently when a task finished (NULL if none) */
-static struct eos_task *next_task = NULL;
+static struct Task *nextTask = NULL;
 /* dummy pool */
-static struct eos_task dummy, dummy2;
+static struct Task dummy;
 /* Timeslice */
-static int time_slice; 
-static int time_count;
+static int timeSlice; 
+static int timeCount;
 int preempt; /* non static, will be modified by semaphore archive. Enable or disable context switch using when semaphores work(preempt = 0) */
-static int port_max_delay; /* max delay permited to semaphores */
-static int task_count = 0;
-static int layers_priority = 1; /* number of layers of priority run*/
-static int current_layer = 0; /* actual layers of priority run*/
+static int portMaxDelay; /* max delay permited to semaphores */
+static int taskCount = 0;
+static int layersPriority = 1; /* number of layers of priority run*/
+static int currentLayer = 0; /* actual layers of priority run*/
 /*-------------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------Task-------------------------------------------------------*/
 /**
@@ -26,39 +26,39 @@ static int current_layer = 0; /* actual layers of priority run*/
  * @param  runner Pointer to function where the task resides
  * @return        0 on success; -1 on error
  */
-int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *arg, int size_stack, int priority) { /* LUAN FERREIRA DOS REIS */
+int createTask(Task *newTask, void (*runner)(void *runnerArg), void *arg, int sizeStack, int priority) { /* LUAN FERREIRA DOS REIS */
     int i;
     char *stack;
 
     /* Ensure the size of stack between allowed*/
-    if(size_stack > TASKMAXSTACKSIZE)
-      size_stack = TASKMAXSTACKSIZE;
-    if(size_stack < TASKMINSTACKSIZE)
-      size_stack = TASKMINSTACKSIZE;
+    if(sizeStack > TASKMAXSTACKSIZE)
+      sizeStack = TASKMAXSTACKSIZE;
+    if(sizeStack < TASKMINSTACKSIZE)
+      sizeStack = TASKMINSTACKSIZE;
 
     /* Not allowed to create while running */
-    if (current_task) return -1;
+    if (currentTask) return -1;
 
     /* Get a new task from the task pool */
-    task_pool = (eos_task*)realloc(task_pool, (task_count + 1) * sizeof(eos_task));
-    new_task = &task_pool[task_count];
+    taskPool = (Task*)realloc(taskPool, (taskCount + 1) * sizeof(Task));
+    newTask = &taskPool[taskCount];
     
     /* save the task struct data*/
-    new_task->task_id = task_count++;
-    new_task->code = runner;
-    new_task->state = READY;
+    newTask->taskId = taskCount++;
+    newTask->code = runner;
+    newTask->state = READY;
     
     /* Achieve a reduction of about 40% to 7% dynamic allocation memory*/
     /* Get memory for stack from the stack pool with dynamic allocation */ 
-    stack = (char*)malloc(size_stack * sizeof(char));
+    stack = (char*)malloc(sizeStack * sizeof(char));
 
     /* Prepare the stack */
-    stack = stack + size_stack - 1;
+    stack = stack + sizeStack - 1;
     *(stack--) = 0x00;              /* Safety distance */
     
     /* save pointer to call function task code to stack */ /* LUAN FERREIRA DOS REIS */
-    *(stack--) = lower8((void *)make_callfunc);
-    *(stack--) = upper8((void *)make_callfunc); 
+    *(stack--) = lower8((void *)makeCallfunc);
+    *(stack--) = upper8((void *)makeCallfunc); 
 
     /* Mega 2560 use 3 byte for call/ret addresses the rest only 2 */
     #if defined (__AVR_ATmega2560__)
@@ -84,13 +84,13 @@ int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *
         *(stack--) = 0x00;
         
     /* pass argument and stack to task struct pointer */ /* LUAN FERREIRA DOS REIS */
-    new_task->arg = arg; /* LUAN FERREIRA DOS REIS */
-    new_task->stack = stack; /* LUAN FERREIRA DOS REIS */
+    newTask->arg = arg; /* LUAN FERREIRA DOS REIS */
+    newTask->stack = stack; /* LUAN FERREIRA DOS REIS */
     
     /* *stack is now the stack pointer. Add the task to the queue */
-    new_task->sp_low = lower8(stack);
-    new_task->sp_high = upper8(stack);
-    eos_enqueue(new_task, priority);
+    newTask->spLow = lower8(stack);
+    newTask->spHigh = upper8(stack);
+    enqueue(newTask, priority);
     
     return 0;
 }
@@ -100,14 +100,14 @@ int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *
  * @param head   Head of the queue
  * @param task The task to insert into the queue
  */
-void eos_enqueue(struct eos_task *task, int layer) {
-    if (task_queue[layer] == NULL) { /* If empty, just set task to be head */
-        task_queue[layer] = task;
+void enqueue(struct Task *task, int layer) {
+    if (taskQueue[layer] == NULL) { /* If empty, just set task to be head */
+        taskQueue[layer] = task;
         task->next = task;
         task->prev = task;
     } else { /* not empty => add to the back of the queue */
-        struct eos_task *head = task_queue[layer];
-        struct eos_task *tail = head->prev;
+        struct Task *head = taskQueue[layer];
+        struct Task *tail = head->prev;
         head->prev = task;
         tail->next = task;
         task->prev = tail;
@@ -119,12 +119,12 @@ void eos_enqueue(struct eos_task *task, int layer) {
  * @param  task The task to remove from the queue
  * @return        Pointer to the element
  */
-struct eos_task *eos_dequeue(struct eos_task *task, int layer) {
+struct Task *dequeue(struct Task *task, int layer) {
     /* If 1 element in queue => now empty */
-    if (task_queue[layer]->prev == task_queue[layer]->next)
-        task_queue[layer] = NULL;
-    else if (task == task_queue[layer]) /* If task is head of queue */
-        task_queue[layer] = task->next; /* => task_queue points to new head */
+    if (taskQueue[layer]->prev == taskQueue[layer]->next)
+        taskQueue[layer] = NULL;
+    else if (task == taskQueue[layer]) /* If task is head of queue */
+        taskQueue[layer] = task->next; /* => task_queue points to new head */
     task->prev->next = task->next;
     task->next->prev = task->prev;
     return task;
@@ -135,7 +135,7 @@ struct eos_task *eos_dequeue(struct eos_task *task, int layer) {
  * @param  void pointer only to beform other task code
  * @return        nothing
  */
-void idle_task(void *args) {
+void idleTask(void *args) {
   int i = 0;
   while(1){
       i++; 
@@ -146,16 +146,16 @@ void idle_task(void *args) {
  * @param  void 
  * @return void
  */
-void make_callfunc(void){
+void makeCallfunc(void){
     /*  call task code */
-    current_task->code(current_task->arg);
+    currentTask->code(currentTask->arg);
     /*  if task code return need to remove task from queue */
     DISABLE_INTERRUPTS();
     /* updates the task state (realy not necessary)*/
-    current_task->state = FINISHED;
+    currentTask->state = FINISHED;
     /* remove task from queue, context switch and enable interrupts */  
     DEQUEUE();
-    eos_switch_task();
+    switchTask();
     ENABLE_INTERRUPTS();
 }
 /*-------------------------------------------------------------------------------------------------------*/
@@ -166,9 +166,9 @@ void make_callfunc(void){
  * @param  int number of priority
  * @return void
  */
-void eos_initial(int layers){ 
+void initial(int layers){ 
   /* create layers of priority to run */
-  layers_priority = layers;
+  layersPriority = layers;
 //  for(int l = 0; l < layers; l++){
 //    task_queue[l] = NULL;
 //  }
@@ -180,11 +180,11 @@ void eos_initial(int layers){
  * @param  ts Desired size of a timeslice
  * @return    -1 if error during initialization (does not return otherwise!)
  */
-int eos_start(int ts, int max_delay) {
+int startSystem(int ts, int maxDelay) {
     /* Create 2 idle task that always run in eos*/
-    eos_create_task(&dummy, idle_task, NULL, TASKMINSTACKSIZE, layers_priority-1);
+    createTask(&dummy, idleTask, NULL, TASKMINSTACKSIZE, layersPriority-1);
     
-    if (task_queue[current_layer] == NULL)
+    if (taskQueue[currentLayer] == NULL)
         return -1;
 
     DISABLE_INTERRUPTS();
@@ -220,16 +220,16 @@ int eos_start(int ts, int max_delay) {
     }
     
     /* Set the size of a timeslice  and port_max_delay from parameter */
-    time_slice = ts;
-    if(max_delay > PORTMAXDELAY || max_delay < 0){ max_delay = PORTMAXDELAY;}
-    port_max_delay = max_delay; 
+    timeSlice = ts;
+    if(maxDelay > PORTMAXDELAY || maxDelay < 0){ maxDelay = PORTMAXDELAY;}
+    portMaxDelay = maxDelay; 
     preempt = 1; /* enable preemption preempt */ 
 
     /* Used by eos_switch_task for the first task switch */
-    current_task = &dummy;
-    current_layer = 0; ;
+    currentTask = &dummy;
+    currentLayer = 0; ;
     DISABLE_INTERRUPTS();
-    eos_switch_task();
+    switchTask();
     ENABLE_INTERRUPTS();
     
     while (1); /* Will never reach this while loop */
@@ -247,12 +247,12 @@ ISR(TIMERx_OVF_vect, ISR_NAKED) {
     /* Reset timer */
     TCNTx = TIMERPRESETx;
     /* If the timeslice has expired, we perform a context switch or reach the maximum delay */
-    if (time_count >= time_slice && preempt || time_count >= port_max_delay) {
-        time_count = 0;
+    if (timeCount >= timeSlice && preempt || timeCount >= portMaxDelay) {
+        timeCount = 0;
         preempt = 1;
-        eos_context_switch();
+        CONTEXT_SWITCH();
     } else
-        time_count++;
+        timeCount++;
     /* Restore registers from stack and return */
     POPREGISTERS();
     RET();
@@ -263,10 +263,10 @@ ISR(TIMERx_OVF_vect, ISR_NAKED) {
  *     "Multitasking on an AVR" by Richard Barry, March 2004 (avrfreaks.net)
  * for further info regarding the "naked" and "__attribute__" keywords
  */
-void __attribute__ ((naked, noinline)) eos_switch_task(void) {
+void __attribute__ ((naked, noinline)) switchTask(void) {
     /* Save registers on stack */
     PUSHREGISTERS();
-    eos_context_switch();
+    CONTEXT_SWITCH();
     /* Restore registers from stack and return */
     POPREGISTERS();
     RET();

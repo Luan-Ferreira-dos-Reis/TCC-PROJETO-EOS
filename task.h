@@ -53,34 +53,34 @@
 #define lower8(X)  ((unsigned char)((unsigned int)(X)))
 #define upper8(X) ((unsigned char)((unsigned int)(X) >> 8))
 /* Performs a context switch by setting stack pointer among tasks */
-#define eos_context_switch() do { \
-init: if (current_task != NULL && task_queue[current_layer] != NULL && \
-          current_task != task_queue[current_layer]) { \
-          current_task->sp_low = SPL; \
-          current_task->sp_high = SPH; \
-          current_task = task_queue[current_layer]; \
-          task_queue[current_layer] = task_queue[current_layer]->next; \
-          SPL = current_task->sp_low; \
-          SPH = current_task->sp_high;} \
-      else if(current_task == NULL && task_queue[current_layer] != NULL){ \
-          current_task = next_task; \
+#define CONTEXT_SWITCH() do { \
+init: if (currentTask != NULL && taskQueue[currentLayer] != NULL && \
+          currentTask != taskQueue[currentLayer]) { \
+          currentTask->spLow = SPL; \
+          currentTask->spHigh = SPH; \
+          currentTask = taskQueue[currentLayer]; \
+          taskQueue[currentLayer] = taskQueue[currentLayer]->next; \
+          SPL = currentTask->spLow; \
+          SPH = currentTask->spHigh;} \
+      else if(currentTask == NULL && taskQueue[currentLayer] != NULL){ \
+          currentTask = nextTask; \
           goto init; \
         } \
-      else if(task_queue[current_layer] == NULL && current_layer < layers_priority){ \
-        current_layer++; \
+      else if(taskQueue[currentLayer] == NULL && currentLayer < layersPriority){ \
+        currentLayer++; \
         goto init; \
      } } while(0)
 
 /* Removes  e the current task from task queue for in case the current task is complete */
 #define DEQUEUE() do { \
-  if (task_queue[current_layer]->prev == task_queue[current_layer]->next) \
-        task_queue[current_layer] = NULL; \
-    else if (current_task == task_queue[current_layer]) \
-        task_queue[current_layer] = current_task->next; \
-    current_task->prev->next = current_task->next; \
-    current_task->next->prev = current_task->prev; \
-    next_task = current_task; \
-    current_task = NULL; \
+  if (taskQueue[currentLayer]->prev == taskQueue[currentLayer]->next) \
+        taskQueue[currentLayer] = NULL; \
+    else if (currentTask == taskQueue[currentLayer]) \
+        taskQueue[currentLayer] = currentTask->next; \
+    currentTask->prev->next = currentTask->next; \
+    currentTask->next->prev = currentTask->prev; \
+    nextTask = currentTask; \
+    currentTask = NULL; \
   } while(0)
  
 /* Enable and disable preemption */   /* LUAN FERREIRA DOS REIS */
@@ -103,35 +103,35 @@ typedef void(*ptrFunc)(void*);
 
 enum state{READY = 0, RUNNING, FINISHED};   /* task state (ready = 0, running = 1, finished = 2*/
  
-typedef struct eos_task{                /* A kernel task structure */
-    int task_id;                        /* Unique identifier */
+typedef struct Task{                /* A kernel task structure */
+    int taskId;                        /* Unique identifier */
     ptrFunc code;                       /* pointer to task code */
     void *arg;                          /* argument */    /* LUAN FERREIRA DOS REIS */
     char *stack;                        /* pointer to task stack */
     int state;                          /* task state (ready = 0, running = 1, finished = 2*/
-    struct eos_task *next;              /* Pointer to next task in queue */
-    struct eos_task *prev;              /* Pointer to previous task */
-    volatile char sp_low, sp_high;      /* Lower/higher 8 bit of StackPointer */
-    volatile char pc_low, pc_high;      /* Lower/higher 8 bit of CounterProgramPointer */
-}eos_task;
+    struct Task *next;              /* Pointer to next task in queue */
+    struct Task *prev;              /* Pointer to previous task */
+    volatile char spLow, spHigh;      /* Lower/higher 8 bit of StackPointer */
+    volatile char pcLow, pcHigh;      /* Lower/higher 8 bit of CounterProgramPointer */
+}Task;
 
 /*--------------------------------------------Task-------------------------------------------------------*/
 /* Creates a new thread */
-int eos_create_task(eos_task *new_task, void (*runner)(void *runner_arg), void *arg, int size_stack, int priority); /* LUAN FERREIRA DOS REIS */
+int createTask(Task *newTask, void (*runner)(void *runnerArg), void *arg, int sizeStack, int priority); /* LUAN FERREIRA DOS REIS */
 /* Switches between tasks */
-void eos_switch_task(void) __attribute__ ((naked));
+void switchTask(void) __attribute__ ((naked));
 /* run task properly */
-void make_callfunc(void);
+void makeCallfunc(void);
 /* Add an element in the back of the queue */
-void eos_enqueue(struct eos_task *task, int layer);
+void enqueue(struct Task *task, int layer);
 /* Return an element from the front of the queue */
-struct eos_task *eos_dequeue(struct eos_task *task, int layer);
+struct Task *dequeue(struct Task *task, int layer);
 /* idle_task*/
-void idle_task(void *args);
+void idleTask(void *args);
 /*--------------------------------------------- Kernel ----------------------------------------------*/
-void eos_initial(int layers);
+void initial(int layers);
 /* Starts the Arduous kernel */
-int eos_start(int ts, int max_delay) ;
+int startSystem(int ts, int maxDelay);
 /*---------------------------------------------------------------------------------------------------*/
 
 #ifdef __cplusplus

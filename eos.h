@@ -29,18 +29,19 @@
     https://github.com/SneManden/arduous/tree/master 
 
     Autor: Luan Ferreira dos Reis - github: https://github.com/Luan-Ferreira-dos-Reis/TCC-PROJETO-EOS
+
  */
  /* BASICS DOCUMENTATION----------------------------------------------------------------------------------------------------------
-   START THE SYSTEM      -> eos_start(int timeSlice, int maxPortDelay);
-   CREATE A TASK         -> eos_create_task(eos_task *task, void function (), void *arg, int size_Of_stack)
-   CREATE A SEMAPHORE    -> eos_create_semaphore()
-      TAKE A SEMAPHORE   -> eos_semaphore_take(eos_semaphore *semaphore)
-      GIVE A SEMAPHORE   -> eos_semaphore_give(eos_semaphore *semaphore)
-   CREATE A QUEUE        -> eos_create_queue(int sizeOfQueue, int sizeOfType[obs: sizeof(int) or sizeof(float) or sizeof(char)])
-      WRITE IN QUEUE     -> eos_queue_write(eos_queue *queue, *value) obs: only overwrite
-      READ FROM QUEUE    -> eos_queue_read(eos_queue *queue)          obs: only read the a value and return: (void*) need to cast
-      SEND TO QUEUE      -> eos_queue_send(eos_queue *queue, *value)  obs: push a element and increase the queue
-      RECEIVE FROM QUEUE -> eos_queue_receive(eos_queue *queue)       obs: pop a element and reduce the queue and return: (void*) need to cast
+   START THE SYSTEM      -> startSystem(int timeSlice, int maxPortDelay);
+   CREATE A TASK         -> createTask(Task *task, void function(), void *arg, int sizeOfStack, int priority)[obs: 0 - higher priority]) 
+   CREATE A SEMAPHORE    -> createSemaphore()
+      TAKE A SEMAPHORE   -> semaphoreTake(Semaphore *semaphore)
+      GIVE A SEMAPHORE   -> semaphoreGive(Semaphore *semaphore)
+   CREATE A QUEUE        -> createQueue(int sizeOfQueue, int sizeOfType[obs: sizeof(int) or sizeof(float) or sizeof(char)])
+      WRITE IN QUEUE     -> queueWrite(Queue *queue, void *value) obs: only overwrite
+      READ FROM QUEUE    -> queueRead(Queue *queue)          obs: only read the a value and return: (void*) need to cast
+      SEND TO QUEUE      -> queueSend(Queue *queue, void *value)  obs: push a element and increase the queue
+      RECEIVE FROM QUEUE -> queueReceive(Queue *queue)       obs: pop a element and reduce the queue and return: (void*) need to cast
  -----------------------------------------------------------------------------------------------------------------------------------*/
 
 #ifndef _EOS_H_
