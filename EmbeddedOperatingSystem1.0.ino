@@ -50,7 +50,7 @@ void setup() {
     createTask(&i2, imprimir2, &letra, 256, 0);
     createTask(&i3, imprimir3, &G, 256, 0);
     createTask(&i4, imprimir4, NULL, 256, 0);
-    //createTask(&i5, imprimir5, NULL, 256, 0);
+    //createTask(&i5, imprimir5, NULL, 128, 0);
     
     /* inicia o sistema eos_start(time slice, portMaxDelay)  max_delay(max 25000ms)*/
     startSystem(5, 10000);    

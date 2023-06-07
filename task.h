@@ -101,14 +101,14 @@ extern "C" {
 /* function pointer */
 typedef void(*ptrFunc)(void*); 
 
-enum state{READY = 0, RUNNING, FINISHED};   /* task state (ready = 0, running = 1, finished = 2*/
+enum state{READY = 0, RUNNING, WAITING ,FINISHED};   /* task state (ready = 0, running = 1, finished = 2*/
  
 typedef struct Task{                /* A kernel task structure */
     int taskId;                        /* Unique identifier */
     ptrFunc code;                       /* pointer to task code */
     void *arg;                          /* argument */    /* LUAN FERREIRA DOS REIS */
     char *stack;                        /* pointer to task stack */
-    int state;                          /* task state (ready = 0, running = 1, finished = 2*/
+    int state;                          /* task state (ready = 0, running = 1, waiting = 2, finished = 3*/
     struct Task *next;              /* Pointer to next task in queue */
     struct Task *prev;              /* Pointer to previous task */
     volatile char spLow, spHigh;      /* Lower/higher 8 bit of StackPointer */
@@ -118,20 +118,19 @@ typedef struct Task{                /* A kernel task structure */
 /*--------------------------------------------Task-------------------------------------------------------*/
 /* Creates a new thread */
 int createTask(Task *newTask, void (*runner)(void *runnerArg), void *arg, int sizeStack, int priority); /* LUAN FERREIRA DOS REIS */
-/* Switches between tasks */
-void switchTask(void) __attribute__ ((naked));
-/* run task properly */
-void makeCallfunc(void);
 /* Add an element in the back of the queue */
 void enqueue(struct Task *task, int layer);
 /* Return an element from the front of the queue */
 struct Task *dequeue(struct Task *task, int layer);
 /* idle_task*/
 void idleTask(void *args);
+/* run task properly */
+void makeCallfunc(void);
 /*--------------------------------------------- Kernel ----------------------------------------------*/
-void initial(int layers);
 /* Starts the Arduous kernel */
 int startSystem(int ts, int maxDelay);
+/* Switches between tasks */
+void switchTask(void) __attribute__ ((naked));
 /*---------------------------------------------------------------------------------------------------*/
 
 #ifdef __cplusplus

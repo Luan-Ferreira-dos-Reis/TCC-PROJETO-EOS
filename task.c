@@ -87,7 +87,7 @@ int createTask(Task *newTask, void (*runner)(void *runnerArg), void *arg, int si
     newTask->arg = arg; /* LUAN FERREIRA DOS REIS */
     newTask->stack = stack; /* LUAN FERREIRA DOS REIS */
     
-    /* *stack is now the stack pointer. Add the task to the queue */
+    /* stack is now the stack pointer. Add the task to the queue */
     newTask->spLow = lower8(stack);
     newTask->spHigh = upper8(stack);
 
@@ -164,19 +164,6 @@ void makeCallfunc(void){
 }
 /*-------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------Kernel functions----------------------------------------*/
-/**
- * perform priority schedule round robin
- * create layers of priority
- * @param  int number of priority
- * @return void
- */
-void initial(int layers){ 
-  /* create layers of priority to run */
-  layersPriority = layers;
-//  for(int l = 0; l < layers; l++){
-//    task_queue[l] = NULL;
-//  }
-}
 /**
  * Initializes the kernel by setting up the interrupt routine to fire each 1 ms
  * Timer interrupt regards:
