@@ -6,6 +6,7 @@ EMBEDDED OPERATING SYSTEM - EOS
 É um sistema operacional para plataforma Arduino
 Entre as características do projeto estão:
   * Escalonamento preemptivo em round roubin (com opção de escolha do timeslice)
+  * Aspectos de prioridade das tarefas
   * Implementação de aspectos básicos de filas e semáforos
   * Flexibilidade de utilização de todos os timers (0, 1, 2, 3, 4, 5) do arduino
   * Flexibilidade no tamanho da pilha necessária para execução dos processos
