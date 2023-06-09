@@ -71,7 +71,22 @@ init: if (currentTask != NULL && taskQueue[currentLayer] != NULL && \
         goto init; \
      } } while(0)
 
-/* Removes  e the current task from task queue for in case the current task is complete */
+/* put a task in any queue task layer */
+#define ENQUEUE(LAYER, TASK) do { \
+    if (taskQueue[LAYER] == NULL) { \
+        taskQueue[LAYER] = TASK; \
+        TASK->next = TASK; \
+        TASK->prev = TASK; \
+    } else { \
+        struct Task *head = taskQueue[LAYER]; \
+        struct Task *tail = head->prev; \
+        head->prev = TASK; \
+        tail->next = TASK; \
+        TASK->prev = tail; \
+        TASK->next = head; \
+ } }while(0)
+
+/* removes  e the current task from task queue for in case the current task is complete */
 #define DEQUEUE() do { \
   if (taskQueue[currentLayer]->prev == taskQueue[currentLayer]->next) \
         taskQueue[currentLayer] = NULL; \
@@ -83,11 +98,12 @@ init: if (currentTask != NULL && taskQueue[currentLayer] != NULL && \
     currentTask = NULL; \
   } while(0)
  
-/* Enable and disable preemption */   /* LUAN FERREIRA DOS REIS */
+/* enable preemption */   /* LUAN FERREIRA DOS REIS */
 #define ENABLE_PREEMPT() do { \
   preempt = 1;\
   } while(0)
-
+  
+/* disable preemption */
 #define DISABLE_PREEMPT() do { \
   preempt = 0; \
   }  while(0)
@@ -101,14 +117,14 @@ extern "C" {
 /* function pointer */
 typedef void(*ptrFunc)(void*); 
 
-enum state{READY = 0, RUNNING, WAITING ,FINISHED};   /* task state (ready = 0, running = 1, finished = 2*/
+enum state{READY = 0, RUNNING, WAITING , FINISHED};   /* task state (ready = 0, running = 1, finished = 2*/
  
 typedef struct Task{                /* A kernel task structure */
     int taskId;                        /* Unique identifier */
     ptrFunc code;                       /* pointer to task code */
     void *arg;                          /* argument */    /* LUAN FERREIRA DOS REIS */
     char *stack;                        /* pointer to task stack */
-    int state;                          /* task state (ready = 0, running = 1, waiting = 2, finished = 3*/
+    int state;                          /* task state (ready = 0, running = 1, waiting = 2 ,finished = 3) really not necessary*/
     struct Task *next;              /* Pointer to next task in queue */
     struct Task *prev;              /* Pointer to previous task */
     volatile char spLow, spHigh;      /* Lower/higher 8 bit of StackPointer */
@@ -118,19 +134,23 @@ typedef struct Task{                /* A kernel task structure */
 /*--------------------------------------------Task-------------------------------------------------------*/
 /* Creates a new thread */
 int createTask(Task *newTask, void (*runner)(void *runnerArg), void *arg, int sizeStack, int priority); /* LUAN FERREIRA DOS REIS */
+/* Switches between tasks */
+void switchTask(void) __attribute__ ((naked));
+/* run task properly */
+void makeCallfunc(void);
 /* Add an element in the back of the queue */
 void enqueue(struct Task *task, int layer);
 /* Return an element from the front of the queue */
 struct Task *dequeue(struct Task *task, int layer);
 /* idle_task*/
 void idleTask(void *args);
-/* run task properly */
-void makeCallfunc(void);
+/* put a task to waiting */
+void taskToWait(void);
+/* restore a task to running */
+void taskToReady(void);
 /*--------------------------------------------- Kernel ----------------------------------------------*/
 /* Starts the Arduous kernel */
 int startSystem(int ts, int maxDelay);
-/* Switches between tasks */
-void switchTask(void) __attribute__ ((naked));
 /*---------------------------------------------------------------------------------------------------*/
 
 #ifdef __cplusplus

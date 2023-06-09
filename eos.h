@@ -8,7 +8,8 @@
     Flexibility to use all timers (0, 1, 2, 3, 4, 5) of the arduino
     Flexibility in the size of the stack needed to run the processes
     Reusing task codes with different arguments (void function(void *arg))
-    This project is being built for a course conclusion discipline.
+    This project is being built for a course conclusion discipline.   
+    It also addresses the notion of priority and task suspension.
     
     From a reasonable modified of the following code:
     https://github.com/SneManden/arduous/tree/master
@@ -24,6 +25,7 @@
     Flexibilidade no tamanho da pilha necessária para execução dos processos
     Reutilização de códigos de tarefas com argumentos diferents (void function(void *arg))
     Este projeto está sendo construído para disciplina de conclusão de curso.
+    Aborda ainda a noção de prioridade e de suspensão de tarefas
     
     A partir de uma modificação razoável do seguinte código:
     https://github.com/SneManden/arduous/tree/master 
@@ -34,7 +36,9 @@
  /* BASICS DOCUMENTATION----------------------------------------------------------------------------------------------------------
    START THE SYSTEM      -> startSystem(int timeSlice, int maxPortDelay);
    CREATE A TASK         -> createTask(Task *task, void function(), void *arg, int sizeOfStack, int priority)[obs: 0 - higher priority]) 
-   CREATE A SEMAPHORE    -> createSemaphore()
+      TASK TO WAITING    -> taskToWait(void) obs: a task in current layer priority down to lower layer and allowed other tasks run
+      TASK TO READY      -> taskToReady(void) obs: a task that was waiting can return to current priority layer 
+   CREATE A SEMAPHORE    -> createSemaphore(void)
       TAKE A SEMAPHORE   -> semaphoreTake(Semaphore *semaphore)
       GIVE A SEMAPHORE   -> semaphoreGive(Semaphore *semaphore)
    CREATE A QUEUE        -> createQueue(int sizeOfQueue, int sizeOfType[obs: sizeof(int) or sizeof(float) or sizeof(char)])

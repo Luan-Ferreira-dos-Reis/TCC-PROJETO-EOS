@@ -8,6 +8,8 @@ static struct Task *taskQueue[5] = {NULL, NULL, NULL, NULL, NULL};
 static struct Task *currentTask = NULL;
 /* Pointer to currently when a task finished (NULL if none) */
 static struct Task *nextTask = NULL;
+/* Pointer to a task wating (NULL if none) */
+static struct Task *waitTask = NULL;
 /* dummy pool */
 static struct Task dummy;
 /* Timeslice */
@@ -18,6 +20,7 @@ static int portMaxDelay; /* max delay permited to semaphores */
 static int taskCount = 0;
 static int layersPriority = 1; /* number of layers of priority run*/
 static int currentLayer = 0; /* actual layers of priority run*/
+
 /*-------------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------Task-------------------------------------------------------*/
 /**
@@ -87,7 +90,7 @@ int createTask(Task *newTask, void (*runner)(void *runnerArg), void *arg, int si
     newTask->arg = arg; /* LUAN FERREIRA DOS REIS */
     newTask->stack = stack; /* LUAN FERREIRA DOS REIS */
     
-    /* stack is now the stack pointer. Add the task to the queue */
+    /* *stack is now the stack pointer. Add the task to the queue */
     newTask->spLow = lower8(stack);
     newTask->spHigh = upper8(stack);
 
@@ -98,6 +101,7 @@ int createTask(Task *newTask, void (*runner)(void *runnerArg), void *arg, int si
     
     return 0;
 }
+
 /**
  * Insert *task into back of queue by modifying pointers of the head and tail
  * of the queue, and the pointers of *task itself.
@@ -118,6 +122,7 @@ void enqueue(struct Task *task, int layer) {
         task->next = head;
     }
 }
+
 /**
  * Removes an element from the queue by updating pointers. Returns the element
  * @param  task The task to remove from the queue
@@ -133,6 +138,7 @@ struct Task *dequeue(struct Task *task, int layer) {
     task->next->prev = task->prev;
     return task;
 }
+
 /**
  * Nothing, absolutely nothing
  * add it to the queue of tasks
@@ -145,6 +151,7 @@ void idleTask(void *args) {
       i++; 
   }
 }
+
 /**
  * perform call to task code
  * @param  void 
@@ -162,6 +169,31 @@ void makeCallfunc(void){
     switchTask();
     ENABLE_INTERRUPTS();
 }
+
+/**
+ * put current task to waiting
+ * @param  void 
+ * @return void
+ */
+void taskToWait(void){
+  DISABLE_INTERRUPTS();
+    DEQUEUE();
+    waitTask = nextTask;
+    switchTask();
+  ENABLE_INTERRUPTS();
+}
+
+/**
+ * restore the task was waiting , another task have to do this
+ * @param  void 
+ * @return void
+ */
+void taskToReady(void){
+  DISABLE_INTERRUPTS();
+    ENQUEUE(currentLayer, waitTask);
+  ENABLE_INTERRUPTS();
+}
+
 /*-------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------Kernel functions----------------------------------------*/
 /**
@@ -226,6 +258,7 @@ int startSystem(int ts, int maxDelay) {
     while (1); /* Will never reach this while loop */
     return 0;  /* And definitely not this return statement */
 }
+
 /*------------------------------------------------------------------------------------------------------*/
 /*----------------------------------- ISR AND CONTEXT SWITCH -------------------------------------------*/
 /**
