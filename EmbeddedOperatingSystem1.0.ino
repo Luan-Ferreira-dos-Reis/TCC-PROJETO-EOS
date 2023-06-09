@@ -2,7 +2,7 @@
 #include "eos.h"
 
 /*inicialização de tarefas, filas e semáforos*/
-Task p, p2, p3,st, i, i2, i3, i4, i5, i6;
+Task i, i2, i3, i4, i5, i6;
 Semaphore serialSemaphore;
 Queue valueint;
 
@@ -293,8 +293,6 @@ void imprimir6(void *p){
 //     *  Obs: precisam ser passados por referencia (&arg1, &arg2, &arg3...)
 //     */
 //    Serial.begin(9600);
-//    /* Criando semáforo createSemaphore()*/ 
-//    serialSemaphore = createSemaphore();
 //       
 //    /* Criando fila createQueue(num_elementos, sizeof(type))*/ 
 //     datachar = createQueue(5, sizeof(char));
