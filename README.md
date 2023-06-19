@@ -40,9 +40,7 @@ Além do entendimento das seguintes referênicas:
  Autor do projeto: Luan Ferreira dos Reis 
  
  
- TODO LOUVOR SEJA DADO A DEUS!
- 
- To God be the glory!
+
  
  
  
