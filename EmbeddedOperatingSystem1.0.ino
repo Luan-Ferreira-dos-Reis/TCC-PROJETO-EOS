@@ -12,6 +12,7 @@ void imprimir2(void *p);
 void imprimir3(void *p);
 void imprimir4(void *p);
 void imprimir5(void *p);
+void imprimir6(void *p);
 
 /*setup*/
 void setup() {
@@ -82,11 +83,11 @@ void imprimir2(void *p){
     Serial.print("tarefa2 meio: parametro recebido: "); Serial.println(l);
     delay(700);
     if(semaphoreTake(&serialSemaphore)){ /* pega um semáforo e escreve na serial */
-        Serial.println("não, não desista dos seus sonhos até porque você já ouviu "); delay(400);
-        Serial.println("falar em cabo de vassoura, supunhamos que você vai Ter a vida que"); delay(400);
-        Serial.println("você é hoje, Daqui uns anos, Num sei, Vai que  Nasça uma planta Pra sobreviver"); delay(400);
-        Serial.println("E q a.. Pode ser que mude A alternativa Do.. Dom pedro segundo e o padre quando"); delay(400); 
-        Serial.println("for rezar a missa Vai querer uma Latinha de cerveja E aí? interprete..."); delay(400);
+        Serial.println("Qualquer pessoa que te motiva a ser melhor é alguém que vale a pena manter por perto. "); delay(400);
+        Serial.println("Não prometa quando estiver feliz. Não responda quando estiver com raiva. Não decida quando estiver triste."); delay(400);
+        Serial.println("Sorrir não mata. Viver não dói. Abraçar não arde. Beijar não fere. Rir não machuca. Ou seja, você não tem motivos para não tentar ser feliz."); delay(400);
+        Serial.println("Mude, mas comece devagar, porque a direção é mais importante que a velocidade."); delay(400); 
+        Serial.println("Que seja livre o que chegar, que seja doce o que ficar e que seja breve o que tiver que ir."); delay(400);
         semaphoreGive(&serialSemaphore);
      }
      Serial.println("tarefa2 fim"); 
